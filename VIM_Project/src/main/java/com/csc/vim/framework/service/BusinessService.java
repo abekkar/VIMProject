@@ -43,9 +43,15 @@ public class BusinessService {
 		//Updating DCTM Invoice
 		pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
 		
-		//Creating MM SAP Invoice 
-		pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
 		
+		//Creating MM ou FI SAP Invoice
+		if(pInvoice.getPurchaseOrder()!= null)
+		{
+			if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
+				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
+			else
+				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+		}
 		//Link SAP Document with Documentum object
 		invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
 		
@@ -54,11 +60,12 @@ public class BusinessService {
 		 	
 	}
 	
-	public void retrievingSapInformations(Invoice pInvoice){
+	public Invoice retrievingSapInformations(Invoice pInvoice){
 		if (pInvoice.getrObjectId()!= null){
-			pInvoice = invoiceSapServiceInstance.retrieveDataFromSAP(pInvoice);
-			invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
-		}		
+			return invoiceSapServiceInstance.retrieveDataFromSAP(pInvoice);
+			//invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+		}
+		return null;
 	}
 	
 	public void createInvoiceIntoSAP(Invoice pInvoice){

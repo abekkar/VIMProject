@@ -2,7 +2,6 @@ package com.csc.vim.framework.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "supplier")
@@ -25,84 +24,84 @@ public class Supplier {
 	public String getrObjectId() {
 		return rObjectId;
 	}
-	@XmlElement
+	
 	public void setrObjectId(String rObjectId) {
 		this.rObjectId = rObjectId;
 	}
 	public String getSupplierIndustry() {
 		return supplierIndustry;
 	}
-	@XmlElement
+	
 	public void setSupplierIndustry(String supplierIndustry) {
 		this.supplierIndustry = supplierIndustry;
 	}
 	public String getSupplierInvoiceAddress() {
 		return supplierInvoiceAddress;
 	}
-	@XmlElement
+	
 	public void setSupplierInvoiceAddress(String supplierInvoiceAddress) {
 		this.supplierInvoiceAddress = supplierInvoiceAddress;
 	}
 	public String getSupplierInvoicePostCode() {
 		return supplierInvoicePostCode;
 	}
-	@XmlElement
+	
 	public void setSupplierInvoicePostCode(String supplierInvoicePostCode) {
 		this.supplierInvoicePostCode = supplierInvoicePostCode;
 	}
 	public String getSupplierInvoiceCity() {
 		return supplierInvoiceCity;
 	}
-	@XmlElement
+	
 	public void setSupplierInvoiceCity(String supplierInvoiceCity) {
 		this.supplierInvoiceCity = supplierInvoiceCity;
 	}
 	public String getSupplierInvoiceCountry() {
 		return supplierInvoiceCountry;
 	}
-	@XmlElement
+	
 	public void setSupplierInvoiceCountry(String supplierInvoiceCountry) {
 		this.supplierInvoiceCountry = supplierInvoiceCountry;
 	}
 	public String getSupplierInvoiceEmail() {
 		return supplierInvoiceEmail;
 	}
-	@XmlElement
+	
 	public void setSupplierInvoiceEmail(String supplierInvoiceEmail) {
 		this.supplierInvoiceEmail = supplierInvoiceEmail;
 	}
 	public String getSupplierTaxNumber() {
 		return supplierTaxNumber;
 	}
-	@XmlElement
+	
 	public void setSupplierTaxNumber(String supplierTaxNumber) {
 		this.supplierTaxNumber = supplierTaxNumber;
 	}
 	public String getSupplierName() {
 		return supplierName;
 	}
-	@XmlElement
+	
 	public void setSupplierName(String supplierName) {
 		this.supplierName = supplierName;
 	}
 	public String getSupplierVatNumber() {
 		return supplierVatNumber;
 	}
-	@XmlElement
+	
 	public void setSupplierVatNumber(String supplierVatNumber) {
 		this.supplierVatNumber = supplierVatNumber;
 	}
 	public String getSupplierSelectedIban() {
 		return supplierSelectedIban;
 	}
-	@XmlElement
+	
 	public void setSupplierSelectedIban(String supplierSelectedIban) {
 		this.supplierSelectedIban = supplierSelectedIban;
 	}
 	public boolean isSupplierCPD() {
 		return supplierCPD;
 	}
-	@XmlElement
+	
 	public void setSupplierCPD(boolean supplierCPD) {
 		this.supplierCPD = supplierCPD;
 	}

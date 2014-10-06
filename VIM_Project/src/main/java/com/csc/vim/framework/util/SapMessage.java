@@ -1,5 +1,11 @@
 package com.csc.vim.framework.util;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "sapmessage")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SapMessage {
 	
 	   MessageTypeEnum type;

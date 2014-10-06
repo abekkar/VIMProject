@@ -37,7 +37,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 	private static final String DOCUMENT_HEADER_STRUCTURE = "DOCUMENTHEADER";
 	private static final String ACCOUNT_TAX_STRUCTURE = "ACCOUNTTAX";
 	private static final String CURRENCY_AMOUNT_STRUCTURE = "CURRENCYAMOUNT";
-	private static final String THRESHOLD_STRUCTURE = "THRESHOLD";
+	private static final String THRESHOLD_STRUCTURE = "THRESHOLD_DESC";
 	
 	private static final String DOC_TYPE = "KN";
 	private static final String COMPANY_CODE = "0011";
@@ -551,10 +551,10 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// *************************************
 		// *** SEt the input of the function ***
 		// *************************************
-		if (null != pInvoice.getPurchaseOrder().getPoNumber() ) {
+		if (null != pInvoice.getPurchaseOrder() ) {
 			function.getImportParameterList().setValue("PURCHASEORDER", pInvoice.getPurchaseOrder().getPoNumber());
 		}
-		if (pInvoice.getPurchaseOrder().getPoNumberPosition() != null) {
+		if (pInvoice.getPurchaseOrder()!= null) {
 			function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
 		}
 		if (null !=pInvoice.getSupplierDetail()){
@@ -632,7 +632,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
 		invoiceInstance.setCompanyCode(COMPANY_CODE);
 		invoiceInstance.setSelectedIban(function.getExportParameterList().getStructure(SAP_IBAN_STRUCTURE).getString(SUPPLIER_IBAN));
-		invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
+//		invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
 		invoiceInstance.setSapBlockingCode(function.getExportParameterList().getStructure(BLOCKING_CODE_STRUCTURE).getString(BLOKING_CODE));
 		invoiceInstance.setInvoicecountryOrigin(function.getExportParameterList().getString(INV_SUPPLIER_ORIGIN));
 		if (null != function.getExportParameterList().getString(UCT))

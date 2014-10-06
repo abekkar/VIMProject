@@ -45,8 +45,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 
 	protected final Logger logger = LoggerFactory
 			.getLogger(InvoiceDctmDao.class);
-	// private static String DQL_QUERY_RETRIEVE_INVOICE =
-	// "select * from invoice where r_object_id='";
+	
 	private static String NAMESPACE = "demat";
 	private static String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_invoice_line,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
 	private static String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
@@ -63,8 +62,6 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	 * @since 1.0
 	 */
 	public Invoice read(Invoice pInvoice) throws JCoException, IOException {
-		// TODO
-		// Optimize DQL request (fusion des requetes en une)
 		try {
 			IDfSession session = dctmInstance.getSession();
 			IDfSysObject invoice = (IDfSysObject) session.getObject(new DfId(
@@ -141,17 +138,17 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					.getString("sales_order_number"));
 			pInvoice.setSalesOrderPosition(invoice
 					.getString("sales_order_position"));
-			//TODO
-//		StringTokenizer listOfGoodReceipts = new StringTokenizer(
-//					invoice.getAllRepeatingStrings("good_receipts", ","), ",");
-//			if (null != listOfGoodReceipts) {
-//				pInvoice.setGoodReceiptNumber(new ArrayList<String>());
-//				while (listOfGoodReceipts.hasMoreTokens())
-//					while (listOfGoodReceipts.hasMoreTokens()) {
-//						pInvoice.getGoodReceiptNumber().add(
-//								listOfGoodReceipts.nextToken());
-//					}
-//			}
+
+		StringTokenizer listOfGoodReceipts = new StringTokenizer(
+					invoice.getAllRepeatingStrings("good_receipts", ","), ",");
+			if (null != listOfGoodReceipts) {
+				pInvoice.setGoodReceiptNumber(new ArrayList<String>());
+				while (listOfGoodReceipts.hasMoreTokens())
+					while (listOfGoodReceipts.hasMoreTokens()) {
+						pInvoice.getGoodReceiptNumber().add(
+								listOfGoodReceipts.nextToken());
+					}
+			}
 			// Populate invoiceLines
 			pInvoice.setInvoiceLines(new ArrayList<InvoiceLine>());
 			IDfQuery queryGetInvoiceLine = new DfQuery();
@@ -189,17 +186,16 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					invoiceLine.setVendorItemNumber(invoiceLineCol
 							.getString("vendor_item_number"));
 					invoiceLine.setWbs(invoiceLineCol.getString("wbs"));
-					//	TODO
-//					invoiceLine.setBaseLineDate(dateUtils.stringToDate(
-//							invoiceLineCol.getString("base_line_date"),
-//							"dd/mm/yyyy"));
-//					invoiceLine.setTaxRate(Integer.parseInt(invoiceLineCol
-//							.getString("tax_rate")));
-//					invoiceLine.setTaxItemNumber(Integer
-//							.parseInt(invoiceLineCol
-//									.getString("tax_item_number")));
-//					invoiceLine.setGlTaxAccount(invoiceLineCol
-//							.getString("tax_gl_account"));
+					invoiceLine.setBaseLineDate(dateUtils.stringToDate(
+							invoiceLineCol.getString("base_line_date"),
+							"dd/mm/yyyy"));
+					invoiceLine.setTaxRate(Integer.parseInt(invoiceLineCol
+							.getString("tax_rate")));
+					invoiceLine.setTaxItemNumber(Integer
+							.parseInt(invoiceLineCol
+									.getString("tax_item_number")));
+					invoiceLine.setGlTaxAccount(invoiceLineCol
+							.getString("tax_gl_account"));
 					invoiceLine.setMaterial(invoiceLineCol
 							.getString("material"));
 					invoiceLine.setSalestaxCode(invoiceLineCol
@@ -288,7 +284,6 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					pInvoice.getListOfBankDetails().add(bankDetail);
 				}
 			}
-
 			// Populate Approver list
 			IDfQuery queryGetApprovers = new DfQuery();
 			queryGetApprovers.setDQL(DQL_QUERY_RETRIEVE_APPROVER
@@ -358,73 +353,47 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		IDfQuery DQLquery = new DfQuery();
 		IDfSession session = dctmInstance.getSession();
 		StringBuilder invoiceDqlUpdater = new StringBuilder(
-				"UPDATE invoice OBJECTS ");
+				"UPDATE  "+NAMESPACE+"_invoice OBJECTS ");
 		// Setting invoice properties
-		invoiceDqlUpdater.append("SET invoice_type="
-				+ pInvoice.getInvoiceType() + " ");
-		invoiceDqlUpdater.append("SET invoice_category="
-				+ pInvoice.getInvoiceCategory() + " ");
-		invoiceDqlUpdater.append("SET first_level_group="
-				+ pInvoice.getFirstLevelController() + " ");
-		invoiceDqlUpdater.append("SET global_level_controller="
-				+ pInvoice.getGlobalLevelController() + " ");
-		invoiceDqlUpdater.append("SET selected_approval_group="
-				+ pInvoice.getSelectedApprovalGroup() + " ");
-		invoiceDqlUpdater.append("SET invoice_currency="
-				+ pInvoice.getInvoiceCurrency() + " ");
-		invoiceDqlUpdater.append("SET invoice_date="
-				+ pInvoice.getInvoiceDate() + " ");
-		invoiceDqlUpdater.append("SET company_code="
-				+ pInvoice.getCompanyCode() + " ");
-		invoiceDqlUpdater.append("SET invoice_family="
-				+ pInvoice.getInvoiceFamily() + " ");
-		invoiceDqlUpdater.append("SET invoice_gross_amount="
-				+ pInvoice.getInvoiceGrossAmount() + " ");
-		invoiceDqlUpdater.append("SET invoice_net_amount="
-				+ pInvoice.getInvoiceNetAmount() + " ");
-		invoiceDqlUpdater.append("SET invoice_reference="
-				+ pInvoice.getInvoiceReference() + " ");
-		invoiceDqlUpdater.append("SET invoice_status="
-				+ pInvoice.getInvoiceStatus() + " ");
-		invoiceDqlUpdater.append("SET invoice_vat_amount="
-				+ pInvoice.getInvoiceVatAmount() + " ");
-		invoiceDqlUpdater.append("SET invoice_country_origin="
-				+ pInvoice.getInvoicecountryOrigin() + " ");
-		invoiceDqlUpdater.append("SET fi_document_number="
-				+ pInvoice.getSapFIDocumentNumber() + " ");
-		invoiceDqlUpdater.append("SET mm_document_number="
-				+ pInvoice.getSapMMDocumentNumber() + " ");
+		invoiceDqlUpdater.append("SET invoice_type='"+ pInvoice.getInvoiceType() + "' ");
+		invoiceDqlUpdater.append("SET invoice_category='"+ pInvoice.getInvoiceCategory() + "' ");
+		invoiceDqlUpdater.append("SET first_level_controller='"+ pInvoice.getFirstLevelController() + "' ");
+		invoiceDqlUpdater.append("SET global_level_controller='"+ pInvoice.getGlobalLevelController() + "' ");
+		invoiceDqlUpdater.append("SET selected_approval_group='"+ pInvoice.getSelectedApprovalGroup() + "' ");
+		invoiceDqlUpdater.append("SET invoice_currency='"+ pInvoice.getInvoiceCurrency() + "' ");
+		invoiceDqlUpdater.append("SET invoice_date='"+ pInvoice.getInvoiceDate() + "' ");
+		invoiceDqlUpdater.append("SET company_code='"+ pInvoice.getCompanyCode() + "' ");
+		invoiceDqlUpdater.append("SET invoice_family='"+ pInvoice.getInvoiceFamily() + "' ");
+		invoiceDqlUpdater.append("SET invoice_gross_amount='"+ pInvoice.getInvoiceGrossAmount() + "' ");
+		invoiceDqlUpdater.append("SET invoice_net_amount='"+ pInvoice.getInvoiceNetAmount() + "' ");
+		invoiceDqlUpdater.append("SET invoice_reference='"+ pInvoice.getInvoiceReference() + "' ");
+		invoiceDqlUpdater.append("SET invoice_status='"+ pInvoice.getInvoiceStatus() + "' ");
+		invoiceDqlUpdater.append("SET invoice_vat_amount='"+ pInvoice.getInvoiceVatAmount() + "' ");
+		invoiceDqlUpdater.append("SET blocking_code_sap='"+ pInvoice.getSapBlockingCode() + "' ");
+		invoiceDqlUpdater.append("SET blocking_code_t='"+ pInvoice.getBlockingCodeT() + "' ");
+		invoiceDqlUpdater.append("SET blocking_code_v='"+ pInvoice.getBlockingCodeV() + "' ");
+		invoiceDqlUpdater.append("SET invoice_lct='"+ pInvoice.getInvoiceLCT()+ "' ");
+		invoiceDqlUpdater.append("SET invoice_uct='"+ pInvoice.getInvoiceUCT() + "' ");
+		invoiceDqlUpdater.append("SET invoice_country_origin='"+ pInvoice.getInvoicecountryOrigin() + "' ");
+		invoiceDqlUpdater.append("SET sap_fi_document_number='"+ pInvoice.getSapFIDocumentNumber() + "' ");
+		invoiceDqlUpdater.append("SET sap_mm_document_number='"+ pInvoice.getSapMMDocumentNumber() + "' ");
 		// TODO
 		// if (pInvoice.getFiDocumentDate() != 0 )
-		invoiceDqlUpdater.append("SET fi_document_date="
-				+ pInvoice.getSapFIDocumentDate() + " ");
+		invoiceDqlUpdater.append("SET sap_fi_document_date='"+ pInvoice.getSapFIDocumentDate() + "' ");
 		// if (null != pInvoice.getMmDocumentDate())
-		invoiceDqlUpdater.append("SET mm_document_date="
-				+ pInvoice.getSapMMDocumentDate() + " ");
-		invoiceDqlUpdater.append("SET freight_cost="
-				+ pInvoice.getFreightCosts() + " ");
-		invoiceDqlUpdater.append("SET packaging_cost="
-				+ pInvoice.getPackagingCosts() + " ");
-		invoiceDqlUpdater.append("SET payment_condition="
-				+ pInvoice.getPaymentCondition() + " ");
-		invoiceDqlUpdater.append("SET selected_threshold_amount="
-				+ pInvoice.getSelectedThresholdAmount() + " ");
-		invoiceDqlUpdater.append("SET selected_iban="
-				+ pInvoice.getSelectedIban() + " ");
-		invoiceDqlUpdater.append("SET scanning_reference="
-				+ pInvoice.getScanningReference() + " ");
-		invoiceDqlUpdater.append("SET scanning_date="
-				+ pInvoice.getScanningDate() + " ");
-		invoiceDqlUpdater.append("SET company_tax_number="
-				+ pInvoice.getCompanyTaxNumber() + " ");
-		invoiceDqlUpdater.append("SET company_vat_number="
-				+ pInvoice.getCompanyVatNumber() + " ");
-		invoiceDqlUpdater.append("SET sap_invoice_creator="
-				+ pInvoice.getSapInvoiceCreator() + " ");
-		invoiceDqlUpdater.append("SET sales_order_number="
-				+ pInvoice.getSalesOrderNumber() + " ");
-		invoiceDqlUpdater.append("SET sales_order_position="
-				+ pInvoice.getSalesOrderPosition() + " ");
+		invoiceDqlUpdater.append("SET sap_mm_document_date='"+ pInvoice.getSapMMDocumentDate() + "' ");
+		invoiceDqlUpdater.append("SET freight_cost='"+ pInvoice.getFreightCosts() + "' ");
+		invoiceDqlUpdater.append("SET packaging_cost='"+ pInvoice.getPackagingCosts() + "' ");
+		invoiceDqlUpdater.append("SET payment_condition='"+ pInvoice.getPaymentCondition() + "' ");
+		invoiceDqlUpdater.append("SET selected_threshold_amount='"+ pInvoice.getSelectedThresholdAmount() + "' ");
+		invoiceDqlUpdater.append("SET selected_iban='"+ pInvoice.getSelectedIban() + "' ");
+		invoiceDqlUpdater.append("SET scanning_reference='"+ pInvoice.getScanningReference() + "' ");
+		invoiceDqlUpdater.append("SET scanning_date='"+ pInvoice.getScanningDate() + "' ");
+		invoiceDqlUpdater.append("SET company_tax_number='"+ pInvoice.getCompanyTaxNumber() + "' ");
+		invoiceDqlUpdater.append("SET company_vat_number='"+ pInvoice.getCompanyVatNumber() + "' ");
+		invoiceDqlUpdater.append("SET sap_invoice_creator='"+ pInvoice.getSapInvoiceCreator() + "' ");
+		invoiceDqlUpdater.append("SET sales_order_number='"+ pInvoice.getSalesOrderNumber() + "' ");
+		invoiceDqlUpdater.append("SET sales_order_position='"+ pInvoice.getSalesOrderPosition() + "' ");
 
 		// StringTokenizer listOfBlokingCode=new
 		// StringTokenizer(collection.getAllRepeatingStrings("blocking_code",","),",");
@@ -466,7 +435,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					if (invoiceLine.getrObjectId().equalsIgnoreCase(
 							invoiceLineCol.getString("r_object_id"))) {
 						StringBuilder invoiceLinesDqlUpdater = new StringBuilder(
-								"UPDATE invoice_line OBJECTS ");
+								"UPDATE "+NAMESPACE+"_invoice_line OBJECTS ");
 						invoiceLinesDqlUpdater.append("SET amount="
 								+ invoiceLineCol.getString("amount") + " ");
 						invoiceLinesDqlUpdater
@@ -545,7 +514,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 				else {
 					// Bloc to create an invoice line if this one doesn't exist
 					StringBuilder invoiceLinesDqlCreator = new StringBuilder(
-							"CREATE invoice_line OBJECTS ");
+							"CREATE "+NAMESPACE+"_invoice_line OBJECTS ");
 					invoiceLinesDqlCreator.append("SET amount="
 							+ invoiceLineCol.getString("amount") + " ");
 					invoiceLinesDqlCreator
@@ -622,7 +591,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		if (null != invoiceSupplierDetail) {
 			while (invoiceSupplierDetail.next()) {
 				StringBuilder SupplierDqlUpdater = new StringBuilder(
-						"UPDATE supplier OBJECTS ");
+						"UPDATE "+NAMESPACE+"_supplier OBJECTS ");
 				SupplierDqlUpdater.append("SET selected_iban="
 						+ invoiceSupplierDetail.getString("selected_iban")
 						+ " ");
@@ -712,7 +681,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		if (null != invoicePODetail) {
 			while (invoicePODetail.next()) {
 				StringBuilder poDetailDqlUpdater = new StringBuilder(
-						"UPDATE supplier OBJECTS ");
+						"UPDATE "+NAMESPACE+"_purchase_order OBJECTS ");
 				poDetailDqlUpdater.append("SET document_type="
 						+ invoicePODetail.getString("document_type") + " ");
 				poDetailDqlUpdater.append("SET po_number="
@@ -771,7 +740,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					if (bankDetail.getrObjectId().equalsIgnoreCase(
 							invoiceBankDetail.getString("r_object_id"))) {
 						StringBuilder invoiceBanksDqlUpdater = new StringBuilder(
-								"UPDATE bank_detail OBJECTS ");
+								"UPDATE "+NAMESPACE+"_invoice_bankinforma OBJECTS ");
 						invoiceBanksDqlUpdater.append("SET bank_name="
 								+ invoiceBankDetail.getString("bank_name")
 								+ " ");
@@ -797,7 +766,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 				else {
 					// Bloc to create an invoice line if this one doesn't exist
 					StringBuilder invoiceBankDqlCreator = new StringBuilder(
-							"CREATE bank_detail OBJECTS ");
+							"CREATE "+NAMESPACE+"_invoice_bankinforma OBJECTS ");
 					invoiceBankDqlCreator.append("SET bank_name="
 							+ invoiceBankDetail.getString("bank_name") + " ");
 					invoiceBankDqlCreator.append("SET supplier_iban="
@@ -821,50 +790,50 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		}
 
 		// Populate Approver list
-		IDfQuery queryGetApprovers = new DfQuery();
-		queryGetApprovers.setDQL(DQL_QUERY_RETRIEVE_APPROVER
-				+ pInvoice.getrObjectId() + "'");
-		IDfCollection invoiceApproverList = queryGetApprovers.execute(session,
-				IDfQuery.DF_READ_QUERY);
-		if (null != invoiceApproverList) {
-			pInvoice.setApproverGroupList(new ArrayList<Message>());
-			while (invoiceApproverList.next()) {
-				Message message = new Message();
-				message.setLogin(invoiceApproverList.getString("login"));
-				message.setContentText(invoiceApproverList.getString("comment"));
-				if (null != invoiceApproverList.getString("sequence"))
-					message.setSequence(Integer.parseInt(invoiceApproverList
-							.getString("sequence")));
-				// TODO
-				// verifier la bonne conversion de string vers date
-				message.setDate(dateUtils.stringToDate(
-						invoiceApproverList.getString("date"), "dd-mm-yyyy"));
-				pInvoice.getApproverGroupList().add(message);
-			}
-		}
+//		IDfQuery queryGetApprovers = new DfQuery();
+//		queryGetApprovers.setDQL(DQL_QUERY_RETRIEVE_APPROVER
+//				+ pInvoice.getrObjectId() + "'");
+//		IDfCollection invoiceApproverList = queryGetApprovers.execute(session,
+//				IDfQuery.DF_READ_QUERY);
+//		if (null != invoiceApproverList) {
+//			pInvoice.setApproverGroupList(new ArrayList<Message>());
+//			while (invoiceApproverList.next()) {
+//				Message message = new Message();
+//				message.setLogin(invoiceApproverList.getString("login"));
+//				message.setContentText(invoiceApproverList.getString("comment"));
+//				if (null != invoiceApproverList.getString("sequence"))
+//					message.setSequence(Integer.parseInt(invoiceApproverList
+//							.getString("sequence")));
+//				// TODO
+//				// verifier la bonne conversion de string vers date
+//				message.setDate(dateUtils.stringToDate(
+//						invoiceApproverList.getString("date"), "dd-mm-yyyy"));
+//				pInvoice.getApproverGroupList().add(message);
+//			}
+//		}
 
 		// Populate Processor list
-		IDfQuery queryGetProcessors = new DfQuery();
-		queryGetProcessors.setDQL(DQL_QUERY_RETRIEVE_PROCESSOR
-				+ pInvoice.getrObjectId() + "'");
-		IDfCollection invoiceProcessorList = queryGetProcessors.execute(
-				session, IDfQuery.DF_READ_QUERY);
-		if (null != invoiceProcessorList) {
-			pInvoice.setProcessorDecision(new ArrayList<Message>());
-			while (invoiceProcessorList.next()) {
-				Message message = new Message();
-				message.setLogin(invoiceApproverList.getString("login"));
-				message.setContentText(invoiceApproverList.getString("comment"));
-				if (null != invoiceApproverList.getString("sequence"))
-					message.setSequence(Integer.parseInt(invoiceApproverList
-							.getString("sequence")));
-				// TODO
-				// verifier la bonne conversion de string vers date
-				message.setDate(dateUtils.stringToDate(
-						invoiceApproverList.getString("date"), "dd-mm-yyyy"));
-				pInvoice.getProcessorDecision().add(message);
-			}
-		}
+//		IDfQuery queryGetProcessors = new DfQuery();
+//		queryGetProcessors.setDQL(DQL_QUERY_RETRIEVE_PROCESSOR
+//				+ pInvoice.getrObjectId() + "'");
+//		IDfCollection invoiceProcessorList = queryGetProcessors.execute(
+//				session, IDfQuery.DF_READ_QUERY);
+//		if (null != invoiceProcessorList) {
+//			pInvoice.setProcessorDecision(new ArrayList<Message>());
+//			while (invoiceProcessorList.next()) {
+//				Message message = new Message();
+//				message.setLogin(invoiceApproverList.getString("login"));
+//				message.setContentText(invoiceApproverList.getString("comment"));
+//				if (null != invoiceApproverList.getString("sequence"))
+//					message.setSequence(Integer.parseInt(invoiceApproverList
+//							.getString("sequence")));
+//				// TODO
+//				// verifier la bonne conversion de string vers date
+//				message.setDate(dateUtils.stringToDate(
+//						invoiceApproverList.getString("date"), "dd-mm-yyyy"));
+//				pInvoice.getProcessorDecision().add(message);
+//			}
+//		}
 		return pInvoice;
 	}
 
