@@ -551,17 +551,17 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// *************************************
 		// *** SEt the input of the function ***
 		// *************************************
-		if (pInvoice.getPurchaseOrder().getPoNumber() != null) {
+		if (null != pInvoice.getPurchaseOrder().getPoNumber() ) {
 			function.getImportParameterList().setValue("PURCHASEORDER", pInvoice.getPurchaseOrder().getPoNumber());
 		}
 		if (pInvoice.getPurchaseOrder().getPoNumberPosition() != null) {
 			function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
 		}
 		if (null !=pInvoice.getSupplierDetail()){
-			if (pInvoice.getSupplierDetail().getSupplierVatNumber() != null) {
+			if (null != pInvoice.getSupplierDetail().getSupplierVatNumber()) {
 				function.getImportParameterList().setValue("VAT_NUMBER", pInvoice.getSupplierDetail().getSupplierVatNumber());
 			}
-			if (pInvoice.getSupplierDetail().getSupplierTaxNumber() != null) {
+			if (null != pInvoice.getSupplierDetail().getSupplierTaxNumber()) {
 				function.getImportParameterList().setValue("STEUER_NUMBER",pInvoice.getSupplierDetail().getSupplierTaxNumber());
 			}
 		}

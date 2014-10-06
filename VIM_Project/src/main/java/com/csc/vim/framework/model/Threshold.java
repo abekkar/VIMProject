@@ -2,6 +2,7 @@ package com.csc.vim.framework.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "threshold")
@@ -18,7 +19,7 @@ public class Threshold {
 		return ThresholdKey;
 	}
 
-
+	@XmlElement
 	public void setThresholdKey(String thresholdKey) {
 		ThresholdKey = thresholdKey;
 	}
@@ -28,7 +29,7 @@ public class Threshold {
 		return ThresholdDesc;
 	}
 
-
+	@XmlElement
 	public void setThresholdDesc(String thresholdDesc) {
 		ThresholdDesc = thresholdDesc;
 	}
@@ -38,7 +39,7 @@ public class Threshold {
 		return ThresholdAmount;
 	}
 
-
+	@XmlElement
 	public void setThresholdAmount(String thresholdAmount) {
 		ThresholdAmount = thresholdAmount;
 	}
@@ -48,7 +49,7 @@ public class Threshold {
 		return ThresholdUnit;
 	}
 
-
+	@XmlElement
 	public void setThresholdUnit(String thresholdUnit) {
 		ThresholdUnit = thresholdUnit;
 	}

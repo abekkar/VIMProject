@@ -1,17 +1,15 @@
 package com.csc.vim.framework.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.csc.vim.framework.model.Invoice;
 import com.csc.vim.framework.properties.Parameters;
-import com.csc.vim.framework.util.BlockingCodeEnum;
 import com.csc.vim.framework.util.InvoiceFamilyEnum;
 
-@Service("BusinessService")
+@Component
 public class BusinessService {
 
 	@Autowired
@@ -22,7 +20,7 @@ public class BusinessService {
 	@Autowired
 	InvoiceSapService invoiceSapServiceInstance;
 	
-	public void processAV2(Invoice pInvoice){
+	public Invoice processAV2(Invoice pInvoice){
 		// Get Invoice Data from Documentum
 		pInvoice  = invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
 		//Get Invoice Data from SAP
@@ -52,8 +50,8 @@ public class BusinessService {
 		invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
 		
 		//Update Documentum Invoice Data
-		pInvoice  = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
-			
+		return invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+		 	
 	}
 	
 	public void retrievingSapInformations(Invoice pInvoice){

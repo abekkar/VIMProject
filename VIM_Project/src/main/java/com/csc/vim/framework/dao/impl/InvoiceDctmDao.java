@@ -49,9 +49,9 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	// "select * from invoice where r_object_id='";
 	private static String NAMESPACE = "demat";
 	private static String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_invoice_line,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from purchase_order,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from bank_detail,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_purchase_order,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_invoice_bankinforma,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
 	private static String DQL_QUERY_RETRIEVE_APPROVER = "select * from message,"+NAMESPACE+"_invoice where message.role='APPROVER' and "+NAMESPACE+"_invoice.r_object_id='";
 	private static String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from message,"+NAMESPACE+"_invoice where message.role='PROCESSOR' and "+NAMESPACE+"_invoice.r_object_id='";
 	private static String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE+"_invoice where invoice_status='";
@@ -76,8 +76,8 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 						.getString("invoice_category")));
 			pInvoice.setFirstLevelController(invoice
 					.getString("first_level_controller"));
-//			pInvoice.setGlobalLevelController(invoice
-//					.getString("global_level_controller"));
+			pInvoice.setGlobalLevelController(invoice
+					.getString("global_level_controller"));
 			pInvoice.setSelectedApprovalGroup(invoice
 					.getString("selected_approval_group"));
 			pInvoice.setInvoiceCurrency(invoice.getString("invoice_currency"));
@@ -134,23 +134,24 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			pInvoice.setCompanyTaxNumber(invoice
 					.getString("company_tax_number"));
 			pInvoice.setCompanyVatNumber(invoice
-					.getString("campany_vat_number"));
+					.getString("company_vat_number"));
 			pInvoice.setSapInvoiceCreator(invoice
 					.getString("sap_invoice_creator"));
 			pInvoice.setSalesOrderNumber(invoice
 					.getString("sales_order_number"));
 			pInvoice.setSalesOrderPosition(invoice
 					.getString("sales_order_position"));
-			StringTokenizer listOfGoodReceipts = new StringTokenizer(
-					invoice.getAllRepeatingStrings("good_receipts", ","), ",");
-			if (null != listOfGoodReceipts) {
-				pInvoice.setGoodReceiptNumber(new ArrayList<String>());
-				while (listOfGoodReceipts.hasMoreTokens())
-					while (listOfGoodReceipts.hasMoreTokens()) {
-						pInvoice.getGoodReceiptNumber().add(
-								listOfGoodReceipts.nextToken());
-					}
-			}
+			//TODO
+//		StringTokenizer listOfGoodReceipts = new StringTokenizer(
+//					invoice.getAllRepeatingStrings("good_receipts", ","), ",");
+//			if (null != listOfGoodReceipts) {
+//				pInvoice.setGoodReceiptNumber(new ArrayList<String>());
+//				while (listOfGoodReceipts.hasMoreTokens())
+//					while (listOfGoodReceipts.hasMoreTokens()) {
+//						pInvoice.getGoodReceiptNumber().add(
+//								listOfGoodReceipts.nextToken());
+//					}
+//			}
 			// Populate invoiceLines
 			pInvoice.setInvoiceLines(new ArrayList<InvoiceLine>());
 			IDfQuery queryGetInvoiceLine = new DfQuery();
@@ -161,8 +162,10 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			if (null != invoiceLineCol) {
 				while (invoiceLineCol.next()) {
 					InvoiceLine invoiceLine = new InvoiceLine();
+					invoiceLine.setrObjectId(invoiceLineCol
+							.getString("r_object_id"));
 					invoiceLine.setVendorAssignmentNumber(invoiceLineCol
-							.getString("vendor_assigment_number"));
+							.getString("vendor_assignment_number"));
 					invoiceLine.setCostCenter(invoiceLineCol
 							.getString("cost_center"));
 					invoiceLine.setGlItemText(invoiceLineCol
@@ -186,17 +189,17 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					invoiceLine.setVendorItemNumber(invoiceLineCol
 							.getString("vendor_item_number"));
 					invoiceLine.setWbs(invoiceLineCol.getString("wbs"));
-
-					invoiceLine.setBaseLineDate(dateUtils.stringToDate(
-							invoiceLineCol.getString("base_line_date"),
-							"dd/mm/yyyy"));
-					invoiceLine.setTaxRate(Integer.parseInt(invoiceLineCol
-							.getString("tax_rate")));
-					invoiceLine.setTaxItemNumber(Integer
-							.parseInt(invoiceLineCol
-									.getString("tax_item_number")));
-					invoiceLine.setGlTaxAccount(invoiceLineCol
-							.getString("tax_gl_account"));
+					//	TODO
+//					invoiceLine.setBaseLineDate(dateUtils.stringToDate(
+//							invoiceLineCol.getString("base_line_date"),
+//							"dd/mm/yyyy"));
+//					invoiceLine.setTaxRate(Integer.parseInt(invoiceLineCol
+//							.getString("tax_rate")));
+//					invoiceLine.setTaxItemNumber(Integer
+//							.parseInt(invoiceLineCol
+//									.getString("tax_item_number")));
+//					invoiceLine.setGlTaxAccount(invoiceLineCol
+//							.getString("tax_gl_account"));
 					invoiceLine.setMaterial(invoiceLineCol
 							.getString("material"));
 					invoiceLine.setSalestaxCode(invoiceLineCol

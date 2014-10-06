@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.csc.vim.framework.dao.impl.InvoiceDctmDao;
 import com.csc.vim.framework.model.Invoice;
@@ -15,7 +15,7 @@ import com.documentum.fc.client.DfServiceException;
 import com.documentum.fc.common.DfException;
 import com.sap.conn.jco.JCoException;
 
-@Service("DCTM_Service")
+@Component
 public class InvoiceDCTMService {
 
 	@Autowired

@@ -2,6 +2,7 @@ package com.csc.vim.framework.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "bankDetail")
@@ -17,7 +18,7 @@ public class BankDetails {
 	public String getrObjectId() {
 		return rObjectId;
 	}
-
+	@XmlElement
 	public void setrObjectId(String rObjectId) {
 		this.rObjectId = rObjectId;
 	}
@@ -25,7 +26,7 @@ public class BankDetails {
 	public String getBankName() {
 		return bankName;
 	}
-
+	@XmlElement
 	public void setBankName(String bankName) {
 		this.bankName = bankName;
 	}
@@ -33,7 +34,7 @@ public class BankDetails {
 	public String getAccountIban() {
 		return accountIban;
 	}
-
+	@XmlElement
 	public void setAccountIban(String accountIban) {
 		this.accountIban = accountIban;
 	}
@@ -41,7 +42,7 @@ public class BankDetails {
 	public String getAccountName() {
 		return accountName;
 	}
-
+	@XmlElement
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
 	}
