@@ -1,0 +1,17 @@
+mvn install:install-file -Dfile=dfc.jar -DgroupId=com.documentum -DartifactId=dfc -Dversion=7.1 -Dpackaging=jar -DgeneratePom=true
+mvn install:install-file -Dfile=certj.jar -DgroupId=com.rsa -DartifactId=certj -Dversion=5.2 -Dpackaging=jar  -DgeneratePom=true
+
+mvn install:install-file -Dfile=cryptojcommon.jar -DgroupId=com.rsa -DartifactId=crypto -Dversion=6.1 -Dpackaging=jar  -DgeneratePom=true
+mvn install:install-file -Dfile=cryptojce.jar -DgroupId=com.rsa -DartifactId=jsafe -Dversion=6.1 -Dpackaging=jar  -DgeneratePom=true
+
+mvn install:install-file -Dfile=jcmFIPS.jar -DgroupId=com.rsa -DartifactId=jcm -Dversion=6.1 -Dpackaging=jar  -DgeneratePom=true
+
+
+
+mvn install:install-file -Dfile=configservice-api.jar -DgroupId=com.documentum -DartifactId=configservice-api -Dversion=7.1.0000.0125 -Dpackaging=jar  -DgeneratePom=true
+mvn install:install-file -Dfile=configservice-impl.jar -DgroupId=com.documentum -DartifactId=configservice-impl -Dversion=7.1.0000.0125 -Dpackaging=jar  -DgeneratePom=true
+
+
+
+mvn install:install-file -DgroupId=com.sap -DartifactId=sap-jco -Dversion=3.0.1 -Dpackaging=jar -Dfile=sapjco3.jar
+

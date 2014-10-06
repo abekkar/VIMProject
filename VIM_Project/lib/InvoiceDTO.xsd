@@ -1,0 +1,34 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+<xs:element name="invoice">
+    <xs:complexType>
+      <xs:sequence>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="amount_threshold"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="authorization_comment"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="bankName"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="bankSupplierName"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="categorie"/>
+		<xs:element type="xs:boolean" minOccurs="0" maxOccurs="1" name="cpd"/>
+		<xs:element type="xs:date" minOccurs="0" maxOccurs="1" name="date"/>
+		<xs:element type="xs:double" minOccurs="0" maxOccurs="1" name="family"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="sapFIDocument"/>
+		<xs:element type="xs:integer" minOccurs="0" maxOccurs="1" name="dctmLifeCycleStatus"/>
+		<xs:element type="xs:integer" minOccurs="0" maxOccurs="1" name="type"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="sapMMDocument"/>
+		<xs:element type="xs:double" minOccurs="0" maxOccurs="1" name="netAmount"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="currency"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="poNumber"/>
+		<xs:element type="xs:date" minOccurs="0" maxOccurs="1" name="poDate"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="reference"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="cptScanRef"/>
+		<xs:element type="xs:time" minOccurs="0" maxOccurs="1" name="cptScanDate"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierVat"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierEmail"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierIban"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierIndustry"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierName"/>
+		<xs:element type="xs:string" minOccurs="0" maxOccurs="1" name="supplierTaxNumber"/>
+		<xs:element type="xs:double" minOccurs="0" maxOccurs="1" name="vatAmount"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
