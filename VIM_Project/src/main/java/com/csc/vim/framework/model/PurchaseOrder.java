@@ -1,5 +1,7 @@
 package com.csc.vim.framework.model;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,9 +14,19 @@ public class PurchaseOrder {
 	private String supplierNumber;
 	private String poDocumentType;
 	private String supplierName;
+	private Date poDate;
 	private String poNumber;
 	private String poNumberPosition;
 	
+	
+	public Date getPoDate() {
+		return poDate;
+	}
+
+	public void setPoDate(Date poDate) {
+		this.poDate = poDate;
+	}
+
 	public String getrObjectId() {
 		return rObjectId;
 	}
@@ -59,14 +71,16 @@ public class PurchaseOrder {
 	public void setSupplierName(String supplierName) {
 		this.supplierName = supplierName;
 	}
+
 	public PurchaseOrder(String rObjectId, String supplierNumber,
-			String poDocumentType, String supplierName, String poNumber,
-			String poNumberPosition) {
+			String poDocumentType, String supplierName, Date poDate,
+			String poNumber, String poNumberPosition) {
 		super();
 		this.rObjectId = rObjectId;
 		this.supplierNumber = supplierNumber;
 		this.poDocumentType = poDocumentType;
 		this.supplierName = supplierName;
+		this.poDate = poDate;
 		this.poNumber = poNumber;
 		this.poNumberPosition = poNumberPosition;
 	}

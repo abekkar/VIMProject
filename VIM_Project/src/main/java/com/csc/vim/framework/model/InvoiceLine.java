@@ -16,20 +16,59 @@ public class InvoiceLine {
 	private String glAccountNumber;
 	private String glTaxAccount;
 	private String vendorItemNumber;
-	private int TaxItemNumber;
-	private int taxRate;
-	private Date baseLineDate;
+	private int    TaxItemNumber;
+	private int    taxRate;
+	private Date   baseLineDate;
 	private String costCenter;
 	private String profitCenter;
 	private String partnerProfitCenter;
 	private String internalOrder;
 	private String material;
 	private String plantNumber;
-	private int quantity;
+	private int    quantity;
 	private String salesOrder;
 	private String wbs;
 	private String vendorAssignmentNumber;
 	private String salestaxCode;
+	private int    salesOrderPosition;
+	private String vendorItemText;
+	private String glAssignment;
+	private String quantityUnit;
+	
+	
+	
+	public String getQuantityUnit() {
+		return quantityUnit;
+	}
+
+	public void setQuantityUnit(String quantityUnit) {
+		this.quantityUnit = quantityUnit;
+	}
+
+	public String getGlAssignment() {
+		return glAssignment;
+	}
+
+	public void setGlAssignment(String glAssignment) {
+		this.glAssignment = glAssignment;
+	}
+
+	public String getVendorItemText() {
+		return vendorItemText;
+	}
+
+	public void setVendorItemText(String vendorItemText) {
+		this.vendorItemText = vendorItemText;
+	}
+
+	public int getSalesOrderPosition() {
+		return salesOrderPosition;
+	}
+
+	public void setSalesOrderPosition(int salesOrderPosition) {
+		this.salesOrderPosition = salesOrderPosition;
+	}
+
 	public String getrObjectId() {
 		return rObjectId;
 	}
@@ -170,13 +209,17 @@ public class InvoiceLine {
 	public void setSalestaxCode(String salestaxCode) {
 		this.salestaxCode = salestaxCode;
 	}
+
+	
 	public InvoiceLine(String rObjectId, String glAccount, String glItemText,
 			String glAccountNumber, String glTaxAccount,
 			String vendorItemNumber, int taxItemNumber, int taxRate,
 			Date baseLineDate, String costCenter, String profitCenter,
 			String partnerProfitCenter, String internalOrder, String material,
 			String plantNumber, int quantity, String salesOrder, String wbs,
-			String vendorAssignmentNumber, String salestaxCode) {
+			String vendorAssignmentNumber, String salestaxCode,
+			int salesOrderPosition, String vendorItemText, String glAssignment,
+			String quantityUnit) {
 		super();
 		this.rObjectId = rObjectId;
 		this.glAccount = glAccount;
@@ -198,7 +241,12 @@ public class InvoiceLine {
 		this.wbs = wbs;
 		this.vendorAssignmentNumber = vendorAssignmentNumber;
 		this.salestaxCode = salestaxCode;
+		this.salesOrderPosition = salesOrderPosition;
+		this.vendorItemText = vendorItemText;
+		this.glAssignment = glAssignment;
+		this.quantityUnit = quantityUnit;
 	}
+
 	public InvoiceLine() {
 
 	}

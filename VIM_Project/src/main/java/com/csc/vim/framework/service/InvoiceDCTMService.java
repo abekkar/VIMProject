@@ -3,6 +3,8 @@ package com.csc.vim.framework.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +22,12 @@ public class InvoiceDCTMService {
 
 	@Autowired
 	InvoiceDctmDao invoiceDctmDaoInstance;
-	
+	protected final Logger logger = LoggerFactory.getLogger(InvoiceDCTMService.class);	
 	public Invoice readInvoiceFromDctm(Invoice pInvoice){
 		try {
 			return invoiceDctmDaoInstance.retrieveInvoice(pInvoice);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		}
 		return null;
 	}
@@ -34,7 +36,7 @@ public class InvoiceDCTMService {
 		try {
 			return invoiceDctmDaoInstance.update(pInvoice);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		}
 		return null;
 	}
@@ -43,19 +45,19 @@ public class InvoiceDCTMService {
 		try {
 			return invoiceDctmDaoInstance.getInvoicesByStatut(status);
 		} catch (DfIdentityException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (DfAuthenticationException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (DfPrincipalException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (DfServiceException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (DfException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (JCoException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage()); 
 		}
 		return null;
 	}

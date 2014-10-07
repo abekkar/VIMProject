@@ -12,10 +12,8 @@ public class Message {
 
 	private String rObjectId;
 	private String login;
-	private int sequence;
 	private String contentText;
-	private Date date;
-	private String role;
+	private String messageCode;
 	
 	public String getrObjectId() {
 		return rObjectId;
@@ -24,34 +22,24 @@ public class Message {
 	public void setrObjectId(String rObjectId) {
 		this.rObjectId = rObjectId;
 	}
-	public String getRole() {
-		return role;
+
+	public String getMessageCode() {
+		return messageCode;
 	}
-	
-	public void setRole(String role) {
-		this.role = role;
+
+	public void setMessageCode(String messageCode) {
+		this.messageCode = messageCode;
 	}
+
 	public String getLogin() {
 		return login;
 	}
-	public Date getDate() {
-		return date;
-	}
-	
-	public void setDate(Date date) {
-		this.date = date;
-	}
+
 	
 	public void setLogin(String login) {
 		this.login = login;
 	}
-	public int getSequence() {
-		return sequence;
-	}
-	
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
+
 	public String getContentText() {
 		return contentText;
 	}
@@ -59,17 +47,17 @@ public class Message {
 	public void setContentText(String contentText) {
 		this.contentText = contentText;
 	}
-	public Message(String rObjectId, String login, int sequence,
-			String contentText, Date date, String role) {
+
+
+	public Message(String rObjectId, String login, String contentText,
+			String messageCode) {
 		super();
 		this.rObjectId = rObjectId;
 		this.login = login;
-		this.sequence = sequence;
 		this.contentText = contentText;
-		this.date = date;
-		this.role = role;
+		this.messageCode = messageCode;
 	}
-	
+
 	public Message(){
 		
 	}

@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Supplier {
 
 	private String rObjectId;
+	private String supplierNumber;
 	private String supplierIndustry;
 	private String supplierSelectedIban;
 	private String supplierInvoiceAddress;
@@ -21,6 +22,15 @@ public class Supplier {
 	private String supplierName;
 	private String supplierVatNumber;
 	
+	
+	public String getSupplierNumber() {
+		return supplierNumber;
+	}
+
+	public void setSupplierNumber(String supplierNumber) {
+		this.supplierNumber = supplierNumber;
+	}
+
 	public String getrObjectId() {
 		return rObjectId;
 	}
@@ -105,14 +115,18 @@ public class Supplier {
 	public void setSupplierCPD(boolean supplierCPD) {
 		this.supplierCPD = supplierCPD;
 	}
-	public Supplier(String rObjectId, String supplierIndustry,
-			String supplierSelectedIban, String supplierInvoiceAddress,
-			String supplierInvoicePostCode, String supplierInvoiceCity,
-			String supplierInvoiceCountry, String supplierInvoiceEmail,
-			boolean supplierCPD, String supplierTaxNumber, String supplierName,
+
+	
+	public Supplier(String rObjectId, String supplierNumber,
+			String supplierIndustry, String supplierSelectedIban,
+			String supplierInvoiceAddress, String supplierInvoicePostCode,
+			String supplierInvoiceCity, String supplierInvoiceCountry,
+			String supplierInvoiceEmail, boolean supplierCPD,
+			String supplierTaxNumber, String supplierName,
 			String supplierVatNumber) {
 		super();
 		this.rObjectId = rObjectId;
+		this.supplierNumber = supplierNumber;
 		this.supplierIndustry = supplierIndustry;
 		this.supplierSelectedIban = supplierSelectedIban;
 		this.supplierInvoiceAddress = supplierInvoiceAddress;
@@ -125,7 +139,7 @@ public class Supplier {
 		this.supplierName = supplierName;
 		this.supplierVatNumber = supplierVatNumber;
 	}
-	
+
 	public Supplier(){
 		
 	}
