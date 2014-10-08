@@ -31,7 +31,7 @@ public class Invoice {
 	
 	private Double invoiceLCT;
 	
-	
+	private List<String> invoiceIban;
 	//By SAP
 	private List<Message> processorDecision;
 	
@@ -536,16 +536,23 @@ public class Invoice {
 		this.listOfThreshold = listOfThreshold;
 	}
 
+	public List<String> getInvoiceIban() {
+		return invoiceIban;
+	}
+
+	public void setInvoiceIban(List<String> invoiceIban) {
+		this.invoiceIban = invoiceIban;
+	}
+
 	public Invoice(List<Threshold> listOfThreshold, String rObjectId,
 			List<String> message, String sapBlockingCode,
 			Double invoiceNetAmountEur, int invoiceNetAmountThreshold,
-			Double invoiceUCT, Double invoiceLCT,
+			Double invoiceUCT, Double invoiceLCT, List<String> invoiceIban,
 			List<Message> processorDecision, String firstLevelController,
 			String globalLevelController, String selectedApprovalGroup,
 			List<Message> approverGroupList, List<SapMessage> sapReturnMessage,
 			String selectedThresholdAmount,
 			List<BankDetails> listOfBankDetails,
-			ArrayList<SapMessage> lisOfSapMessages,
 			List<InvoiceLine> invoiceLines, PurchaseOrder purchaseOrder,
 			Supplier supplierDetail, BlockingCodeEnumList blockingCodeList,
 			String sapDocumentId, String invoiceType, String invoiceDate,
@@ -571,6 +578,7 @@ public class Invoice {
 		this.invoiceNetAmountThreshold = invoiceNetAmountThreshold;
 		this.invoiceUCT = invoiceUCT;
 		this.invoiceLCT = invoiceLCT;
+		this.invoiceIban = invoiceIban;
 		this.processorDecision = processorDecision;
 		this.firstLevelController = firstLevelController;
 		GlobalLevelController = globalLevelController;
@@ -579,7 +587,6 @@ public class Invoice {
 		this.sapReturnMessage = sapReturnMessage;
 		this.selectedThresholdAmount = selectedThresholdAmount;
 		this.listOfBankDetails = listOfBankDetails;
-//		this.lisOfSapMessages = lisOfSapMessages;
 		this.invoiceLines = invoiceLines;
 		this.purchaseOrder = purchaseOrder;
 		this.supplierDetail = supplierDetail;

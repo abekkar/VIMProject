@@ -3,9 +3,10 @@ package com.csc.vim.framework.dao.impl;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ import com.sap.conn.jco.ext.DestinationDataProvider;
 @Component
 public class InvoiceSapDao extends AbstractSapDao {
 
+	protected final Logger logger = LoggerFactory.getLogger(InvoiceSapDao.class);
 	private static final String ARCHIV_CONNECTION_INSERT   = "ARCHIV_CONNECTION_INSERT";
 	private static final String BAPI_INCOMINGINVOICE_SAVE  = "ZMM_BAPI_INCOMINGINVOICE_SAVE";
 	private static final String ZMM_BAPI_RETRIEVE_TO_DCTM  = "ZMM_BAPI_RETRIEVE_TO_DCTM";
@@ -51,38 +53,45 @@ public class InvoiceSapDao extends AbstractSapDao {
 	/*
 	 * Structure Properties
 	 */
-	 private static final String PO_HEADER_STRUCTURE= "PO_HEADER";
-	 private static final String SAP_IBAN_STRUCTURE= "SAP_IBAN";
-	 private static final String SAP_IBAN_INPUT_STRUCTURE= "T_IBAN";
-	 //private static final String PO_ITEMS_STRUCTURE= "PO_ITEMS";
-	 //private static final String THRESHOLD_AMOUNT_STRUCTURE = "THRESHOLD_AMOUNT";
-	 private static final String BLOCKING_CODE_STRUCTURE= "BLOCKING_CODE";
+	 private static final String PO_HEADER_STRUCTURE             = "PO_HEADER";
+	 private static final String SAP_IBAN_STRUCTURE              = "SAP_IBAN";
+	 private static final String SAP_IBAN_INPUT_STRUCTURE        = "T_IBAN";
+	 private static final String SAP_IBAN_OUTPUT_STRUCTURE       = "SAP_IBAN";
+	 //private static final String PO_ITEMS_STRUCTURE            = "PO_ITEMS";
+	 private static final String THRESHOLD_AMOUNT_STRUCTURE      = "THRESHOLD_AMOUNT";
+	 private static final String BLOCKING_CODE_STRUCTURE         = "BLOCKING_CODE";
 	 private static final String ADDITIONAL_HEADERDATA_STRUCTURE ="ADDITIONALHEADERDATA";
 	 
+	 /*
+	  * Bank Detail
+	  */
+	 private static final String  BANK_NAME                      = "BANK_NAME";
+	 private static final String  T_IBAN_IBAN                    = "IBAN";
 	/*
 	 * Supplier Properties
 	 */
 	 
-	private static final String SUPPLIER_CPD = "CPD";
-	private static final String SUPPLIER_INDUSTRY  = "INDUSTRY"; 
-	private static final String SUPPLIER_ADRESS    = "INV_SUPPLIER_ADD";
-	private static final String SUPPLIER_CITY      = "INV_SUPPLIER_CITY";
-	private static final String SUPPLIER_NAME      = "INV_SUPPLIER_NAME";
-	private static final String INVOICE_FAMILY     = "INVOICE_FAMILY";
-	private static final String SUPPLIER_COUNTRY   = "INV_SUPPLIER_COUNTRY";
-	private static final String SUPPLIER_EMAIL     = "INV_SUPPLIER_EMAIL";
-	private static final String SUPPLIER_POST_CODE = "INV_SUPPLIER_PCODE";
-	private static final String SUPPLIER_TAXNUMBER = "SUPPLIER_TAXNUMBER";
-	private static final String SUPPLIER_VATNUMBER = "SUPPLIER_VATNUMBER";
-	private static final String SUPPLIER_IBAN      = "IBAN";
+	private static final String SUPPLIER_CPD        = "CPD";
+	private static final String SUPPLIER_INDUSTRY   = "INDUSTRY"; 
+	private static final String SUPPLIER_ADRESS     = "INV_SUPPLIER_ADD";
+	private static final String SUPPLIER_CITY       = "INV_SUPPLIER_CITY";
+	private static final String SUPPLIER_NAME       = "INV_SUPPLIER_NAME";
+	private static final String INVOICE_FAMILY      = "INVOICE_FAMILY";
+	private static final String SUPPLIER_COUNTRY    = "INV_SUPPLIER_COUNTRY";
+	private static final String SUPPLIER_EMAIL      = "INV_SUPPLIER_EMAIL";
+	private static final String SUPPLIER_POST_CODE  = "INV_SUPPLIER_PCODE";
+	private static final String SUPPLIER_TAXNUMBER  = "SUPPLIER_TAXNUMBER";
+	private static final String SUPPLIER_VATNUMBER  = "SUPPLIER_VATNUMBER";
+	private static final String SUPPLIER_IBAN       = "IBAN";
 	
 	/*
 	 * PO Properties
 	 */
 	
-	private static final String PO_NUMBER = "PO_NUMBER";
-	private static final String PO_TYPE   = "DOC_TYPE";
-	private static final String VEND_NAME = "VEND_NAME";
+	private static final String PO_NUMBER           = "PO_NUMBER";
+	private static final String PO_TYPE             = "DOC_TYPE";
+	private static final String VENDOR_NAME         = "VEND_NAME";
+	private static final String VENDOR_NUMBER       = "VENDOR";
 	
 	/*
 	 * Invoice Properties
@@ -106,22 +115,25 @@ public class InvoiceSapDao extends AbstractSapDao {
 	
 	private static final String PROCESSOR            = "PROCESSOR";
 	private static final String DISPATCHER_NAME      = "DISPATCHER_NAME";
+	private static final String DISPATCHER_KEY       = "DISPATCHER_KEY";
 	
 	/*
 	 * Approver Properties 
 	 */
 	
-	private static final String APPROVER = "APPROVER";
-	private static final String APPROVER_NAME = "APPROVER_NAME";
-	private static final String PROCESSOR_TABLE = "PROCESSOR_TABLE";
-	private static final String APPROVER_TABLE = "APPROVER_TABLE";
+	private static final String APPROVER             = "APPROVER";
+	private static final String APPROVER_NAME        = "APPROVER_NAME";
+	private static final String PROCESSOR_TABLE      = "PROCESSOR_TABLE";
+	private static final String APPROVER_TABLE       = "APPROVER_TABLE";
+	private static final String APPROVER_KEY         = "APPROVER_KEY";
+	private static final String APPROVER_ROLE        = "AVWA";
 	
 	/*
 	 * Return ZMM_BAPI_INCOMINGINVOICE_SAVE Properties
 	 */
 	
-	private static final String INVOICE_DOC_NUMBER = "INVOICEDOCNUMBER";
-	private static final String FISCAL_YEAR = "FISCALYEAR";
+	private static final String INVOICE_DOC_NUMBER   = "INVOICEDOCNUMBER";
+	private static final String FISCAL_YEAR          = "FISCALYEAR";
 	/**
 	 * @author syongwaiman2
 	 * @since 1.0
@@ -551,33 +563,37 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// *************************************
 		// *** SEt the input of the function ***
 		// *************************************
-		if (null != pInvoice.getPurchaseOrder() ) {
-			function.getImportParameterList().setValue("PURCHASEORDER", pInvoice.getPurchaseOrder().getPoNumber());
-		}
-		if (pInvoice.getPurchaseOrder()!= null) {
-			function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
-		}
-		if (null !=pInvoice.getSupplierDetail()){
-			if (null != pInvoice.getSupplierDetail().getSupplierVatNumber()) {
-				function.getImportParameterList().setValue("VAT_NUMBER", pInvoice.getSupplierDetail().getSupplierVatNumber());
+		try
+		{
+			if (null != pInvoice.getPurchaseOrder() ) {
+				function.getImportParameterList().setValue("PURCHASEORDER", pInvoice.getPurchaseOrder().getPoNumber());
 			}
-			if (null != pInvoice.getSupplierDetail().getSupplierTaxNumber()) {
-				function.getImportParameterList().setValue("STEUER_NUMBER",pInvoice.getSupplierDetail().getSupplierTaxNumber());
+			if (pInvoice.getPurchaseOrder()!= null) {
+				function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
 			}
-		}
-		
-		function.getImportParameterList().setValue("CURRENCY", pInvoice.getInvoiceCurrency());
-		function.getImportParameterList().setValue("SALESORDER_NR", pInvoice.getSalesOrderNumber());
-		function.getImportParameterList().setValue("INV_NETAMOUNT", pInvoice.getInvoiceNetAmount());
-		function.getImportParameterList().setValue("ITEMS", SAP_X_VALUE);
-		if (null != pInvoice.getListOfBankDetails() ){
-			for (BankDetails bankInfo : pInvoice.getListOfBankDetails()) {
-				function.getImportParameterList().getStructure(SAP_IBAN_INPUT_STRUCTURE).setValue("IBAN", bankInfo.getAccountIban());
+			if (null !=pInvoice.getSupplierDetail()){
+				if (null != pInvoice.getSupplierDetail().getSupplierVatNumber()) {
+					function.getImportParameterList().setValue("VAT_NUMBER", pInvoice.getSupplierDetail().getSupplierVatNumber());
+				}
+				if (null != pInvoice.getSupplierDetail().getSupplierTaxNumber()) {
+					function.getImportParameterList().setValue("STEUER_NUMMER",pInvoice.getSupplierDetail().getSupplierTaxNumber());
+				}
 			}
+			
+			function.getImportParameterList().setValue("CURRENCY", pInvoice.getInvoiceCurrency());
+			function.getImportParameterList().setValue("SALESORDER_NR", pInvoice.getSalesOrderNumber());
+			function.getImportParameterList().setValue("INV_NETAMOUNT", pInvoice.getInvoiceNetAmount());
+			function.getImportParameterList().setValue("ITEMS", SAP_X_VALUE);
+			if (null != pInvoice.getListOfBankDetails() ){
+				for (BankDetails bankInfo : pInvoice.getListOfBankDetails()) {
+					function.getImportParameterList().getStructure(SAP_IBAN_INPUT_STRUCTURE).setValue("IBAN", bankInfo.getAccountIban());
+				}
+			}
+			function.getImportParameterList().setValue("THRESHOLD_KEY", pInvoice.getSelectedThresholdAmount());
+			function.getImportParameterList().setValue("VALIDATION_GROUP", pInvoice.getSelectedApprovalGroup());
+		} catch (Exception e) {
+			logger.error("Error during setting BAPI "+ZMM_BAPI_RETRIEVE_TO_DCTM+" Fields : "+ e.getMessage());
 		}
-		function.getImportParameterList().setValue("THRESHOLD_KEY", pInvoice.getSelectedThresholdAmount());
-		function.getImportParameterList().setValue("VALIDATION_GROUP", pInvoice.getSelectedApprovalGroup());
-
 		// *****************************
 		//  *** Execute the function ***
 		// *****************************
@@ -625,140 +641,163 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// **************************
 		// *** GET INVOICE DATA   ***
 		// **************************
-
-		if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
-			invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
-		if (null != function.getExportParameterList().getString(INVOICE_CATEGORY))
-			invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
-		invoiceInstance.setCompanyCode(COMPANY_CODE);
-		invoiceInstance.setSelectedIban(function.getExportParameterList().getStructure(SAP_IBAN_STRUCTURE).getString(SUPPLIER_IBAN));
-//		invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
-		invoiceInstance.setSapBlockingCode(function.getExportParameterList().getStructure(BLOCKING_CODE_STRUCTURE).getString(BLOKING_CODE));
-		invoiceInstance.setInvoicecountryOrigin(function.getExportParameterList().getString(INV_SUPPLIER_ORIGIN));
-		if (null != function.getExportParameterList().getString(UCT))
-			invoiceInstance.setInvoiceUCT(Double.parseDouble(function.getExportParameterList().getString(UCT)));
-		if (null != function.getExportParameterList().getString(LCT))
-			invoiceInstance.setInvoiceLCT(Double.parseDouble(function.getExportParameterList().getString(LCT)));
-		if (null != function.getExportParameterList().getString(NET_AMOUNT_EUR))
-			invoiceInstance.setInvoiceNetAmountEur(Double.parseDouble(function.getExportParameterList().getString(NET_AMOUNT_EUR)));
-		//Getting the threshold list
-		if (function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getNumRows() > 0){
-			if (null == invoiceInstance.getListOfThreshold()){
-				invoiceInstance.setListOfThreshold(new ArrayList<Threshold>());
-				for (int i = 0; i < function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getNumRows(); i++) {
-					function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).setRow(i);
-					Threshold thresholdInstance = new Threshold();
-					thresholdInstance.setThresholdKey(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLDKEY));
-					thresholdInstance.setThresholdDesc(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_DESCR));
-					thresholdInstance.setThresholdAmount(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_AMOUNT));
-					thresholdInstance.setThresholdUnit(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_UNIT));
-					invoiceInstance.getListOfThreshold().add(thresholdInstance);
+		try
+		{
+			if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
+				invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
+			if (null != function.getExportParameterList().getString(INVOICE_CATEGORY))
+				invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
+			invoiceInstance.setCompanyCode(COMPANY_CODE);
+			invoiceInstance.setSelectedIban(function.getExportParameterList().getStructure(SAP_IBAN_STRUCTURE).getString(SUPPLIER_IBAN));
+	//		invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
+			invoiceInstance.setSapBlockingCode(function.getExportParameterList().getStructure(BLOCKING_CODE_STRUCTURE).getString(BLOKING_CODE));
+			invoiceInstance.setInvoicecountryOrigin(function.getExportParameterList().getString(INV_SUPPLIER_ORIGIN));
+			if (null != function.getExportParameterList().getString(UCT) && "" !=function.getExportParameterList().getString(UCT))
+				invoiceInstance.setInvoiceUCT(Double.parseDouble(function.getExportParameterList().getString(UCT)));
+			if (null != function.getExportParameterList().getString(LCT) && "" !=function.getExportParameterList().getString(LCT))
+				invoiceInstance.setInvoiceLCT(Double.parseDouble(function.getExportParameterList().getString(LCT)));
+			if (null != function.getExportParameterList().getString(NET_AMOUNT_EUR) && "" !=function.getExportParameterList().getString(NET_AMOUNT_EUR) )
+				invoiceInstance.setInvoiceNetAmountEur(Double.parseDouble(function.getExportParameterList().getString(NET_AMOUNT_EUR)));
+			//Getting the threshold list
+			if (function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getNumRows() > 0){
+				if (null == invoiceInstance.getListOfThreshold()){
+					invoiceInstance.setListOfThreshold(new ArrayList<Threshold>());
+					for (int i = 0; i < function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getNumRows(); i++) {
+						function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).setRow(i);
+						Threshold thresholdInstance = new Threshold();
+						thresholdInstance.setThresholdKey(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLDKEY));
+						thresholdInstance.setThresholdDesc(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_DESCR));
+						thresholdInstance.setThresholdAmount(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_AMOUNT));
+						thresholdInstance.setThresholdUnit(function.getTableParameterList().getTable(THRESHOLD_STRUCTURE).getString(THRESHOLD_UNIT));
+						invoiceInstance.getListOfThreshold().add(thresholdInstance);
+					}
+				}
+				else{
+					
 				}
 			}
-			else{
-				
+			// *****************************
+			// **** GET Bank Detail LIST   *
+			// *****************************
+			if (null != invoiceInstance.getListOfBankDetails())
+			{
+				invoiceInstance.getListOfBankDetails().clear();
+				BankDetails bankInstance = new BankDetails();
+				bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
+				bankInstance.setAccountName("");
+				bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
+				invoiceInstance.getListOfBankDetails().add(bankInstance);
 			}
-		}
-		// *****************************
-		// **** GET APPROVER LIST   ****
-		// *****************************
-		if (function.getTableParameterList().getTable(APPROVER_TABLE).getNumRows() > 0){
-			invoiceInstance.getApproverGroupList().clear();
-			invoiceInstance.setApproverGroupList(new ArrayList<Message>());
-			for (int i = 0; i < function.getTableParameterList().getTable(APPROVER_TABLE).getNumRows(); i++) {
-				function.getTableParameterList().getTable(APPROVER_TABLE).setRow(i);
-				Message approverMessageInstance = new Message();
-				approverMessageInstance.setLogin(function.getTableParameterList().getTable(APPROVER_TABLE).getString(APPROVER_NAME));
-				approverMessageInstance.setRole(APPROVER);
-				approverMessageInstance.setDate(new Date());
-				invoiceInstance.getApproverGroupList().add(approverMessageInstance);
+			else
+			{
+				invoiceInstance.setListOfBankDetails(new ArrayList<BankDetails>());
+				BankDetails bankInstance = new BankDetails();
+				bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
+				bankInstance.setAccountName("");
+				bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
+				invoiceInstance.getListOfBankDetails().add(bankInstance);
 			}
-		}
-		
-		// *****************************
-		// **** GET PROCESSOR LIST   ***
-		// *****************************
-		if (function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows() > 0){
-			invoiceInstance.getProcessorDecision().clear();
-			invoiceInstance.setProcessorDecision(new ArrayList<Message>());
-			for (int i = 0; i < function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows(); i++) {
-				function.getTableParameterList().getTable(PROCESSOR_TABLE).setRow(i);
-				Message processorMessageInstance = new Message();
-				processorMessageInstance.setLogin(function.getTableParameterList().getTable(PROCESSOR_TABLE).getString(DISPATCHER_NAME));
-				processorMessageInstance.setRole(PROCESSOR);
-				processorMessageInstance.setDate(new Date());
-				invoiceInstance.getApproverGroupList().add(processorMessageInstance);
+			// *****************************
+			// **** GET APPROVER LIST   ****
+			// *****************************
+			if (function.getTableParameterList().getTable(APPROVER_TABLE).getNumRows() > 0){
+				invoiceInstance.getApproverGroupList().clear();
+				invoiceInstance.setApproverGroupList(new ArrayList<Message>());
+				for (int i = 0; i < function.getTableParameterList().getTable(APPROVER_TABLE).getNumRows(); i++) {
+					function.getTableParameterList().getTable(APPROVER_TABLE).setRow(i);
+					Message approverMessageInstance = new Message();
+					approverMessageInstance.setLogin(function.getTableParameterList().getTable(APPROVER_TABLE).getString(APPROVER_KEY));
+					approverMessageInstance.setMessageCode(APPROVER_ROLE);
+					invoiceInstance.getApproverGroupList().add(approverMessageInstance);
+				}
 			}
-		}
-		
-		// *****************************
-		// *** GET SUPPLIER DETAIL   ***
-		// *****************************
-		if (invoiceInstance.getSupplierDetail()==null){
-			Supplier supplierDetailInstance = new Supplier();
-			supplierDetailInstance.setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
-			supplierDetailInstance.setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
-			supplierDetailInstance.setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
-			supplierDetailInstance.setSupplierInvoiceCity(function.getExportParameterList().getString(SUPPLIER_CITY));
-			supplierDetailInstance.setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
-			supplierDetailInstance.setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
-			supplierDetailInstance.setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
-			if(null != pInvoice.getSupplierDetail()){
-				supplierDetailInstance.setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
-				supplierDetailInstance.setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
-			}
-			if (null != function.getExportParameterList().getString(SUPPLIER_CPD)){
-				if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
-					supplierDetailInstance.setSupplierCPD(false);
-				else
-					supplierDetailInstance.setSupplierCPD(true);
-			}
-			invoiceInstance.setSupplierDetail(supplierDetailInstance);
-		}
-		else {
-			invoiceInstance.getSupplierDetail().setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
-			invoiceInstance.getSupplierDetail().setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
-			invoiceInstance.getSupplierDetail().setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
-			invoiceInstance.getSupplierDetail().setSupplierInvoiceCity(function.getExportParameterList().getString(SUPPLIER_CITY));
-			invoiceInstance.getSupplierDetail().setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
-			invoiceInstance.getSupplierDetail().setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
-			invoiceInstance.getSupplierDetail().setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
-			if(null != pInvoice.getSupplierDetail()){
-				invoiceInstance.getSupplierDetail().setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
-				invoiceInstance.getSupplierDetail().setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
-			}
-			if (null != function.getExportParameterList().getString(SUPPLIER_CPD))
-				if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
-					invoiceInstance.getSupplierDetail().setSupplierCPD(false);
-				else
-					invoiceInstance.getSupplierDetail().setSupplierCPD(true);
-		}
-
-		// ***********************************
-		// *** GET PURCHASE ORDER DETAIL   ***
-		// ***********************************
-		if (null == invoiceInstance.getPurchaseOrder()){
-			PurchaseOrder purchaseOrderInstance = new PurchaseOrder();
-			purchaseOrderInstance.setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
-			purchaseOrderInstance.setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
-			if (null != pInvoice.getPurchaseOrder()){
-				purchaseOrderInstance.setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
-				purchaseOrderInstance.setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
-			}
-			purchaseOrderInstance.setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VEND_NAME));
-			invoiceInstance.setPurchaseOrder(purchaseOrderInstance);
-		}
-		else{
-			invoiceInstance.getPurchaseOrder().setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
-			invoiceInstance.getPurchaseOrder().setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
-			if (null != pInvoice.getPurchaseOrder()){
-				invoiceInstance.getPurchaseOrder().setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
-				invoiceInstance.getPurchaseOrder().setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
-			}
-			invoiceInstance.getPurchaseOrder().setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VEND_NAME));
-		}
 			
-		logger.debug("Executing " + invoiceInstance.getInvoiceReference());
+			// *****************************
+			// **** GET PROCESSOR LIST   ***
+			// *****************************
+			if (function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows() > 0){
+				invoiceInstance.getProcessorDecision().clear();
+				invoiceInstance.setProcessorDecision(new ArrayList<Message>());
+				for (int i = 0; i < function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows(); i++) {
+					function.getTableParameterList().getTable(PROCESSOR_TABLE).setRow(i);
+					Message processorMessageInstance = new Message();
+					processorMessageInstance.setLogin(function.getTableParameterList().getTable(PROCESSOR_TABLE).getString(DISPATCHER_KEY));
+					invoiceInstance.getApproverGroupList().add(processorMessageInstance);
+				}
+			}
+			
+			// *****************************
+			// *** GET SUPPLIER DETAIL   ***
+			// *****************************
+			if (invoiceInstance.getSupplierDetail()==null){
+				Supplier supplierDetailInstance = new Supplier();
+				supplierDetailInstance.setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
+				supplierDetailInstance.setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
+				supplierDetailInstance.setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
+				supplierDetailInstance.setSupplierInvoiceCity(function.getExportParameterList().getString(SUPPLIER_CITY));
+				supplierDetailInstance.setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
+				supplierDetailInstance.setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
+				supplierDetailInstance.setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
+				if(null != pInvoice.getSupplierDetail()){
+					supplierDetailInstance.setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
+					supplierDetailInstance.setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
+				}
+				if (null != function.getExportParameterList().getString(SUPPLIER_CPD)){
+					if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
+						supplierDetailInstance.setSupplierCPD(false);
+					else
+						supplierDetailInstance.setSupplierCPD(true);
+				}
+				invoiceInstance.setSupplierDetail(supplierDetailInstance);
+			}
+			else {
+				invoiceInstance.getSupplierDetail().setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
+				invoiceInstance.getSupplierDetail().setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
+				invoiceInstance.getSupplierDetail().setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
+				invoiceInstance.getSupplierDetail().setSupplierInvoiceCity(function.getExportParameterList().getString(SUPPLIER_CITY));
+				invoiceInstance.getSupplierDetail().setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
+				invoiceInstance.getSupplierDetail().setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
+				invoiceInstance.getSupplierDetail().setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
+				if(null != pInvoice.getSupplierDetail()){
+					invoiceInstance.getSupplierDetail().setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
+					invoiceInstance.getSupplierDetail().setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
+				}
+				if (null != function.getExportParameterList().getString(SUPPLIER_CPD))
+					if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
+						invoiceInstance.getSupplierDetail().setSupplierCPD(false);
+					else
+						invoiceInstance.getSupplierDetail().setSupplierCPD(true);
+			}
+	
+			// ***********************************
+			// *** GET PURCHASE ORDER DETAIL   ***
+			// ***********************************
+			if (null == invoiceInstance.getPurchaseOrder()){
+				PurchaseOrder purchaseOrderInstance = new PurchaseOrder();
+				purchaseOrderInstance.setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
+				purchaseOrderInstance.setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
+				if (null != pInvoice.getPurchaseOrder()){
+					purchaseOrderInstance.setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
+					purchaseOrderInstance.setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
+				}
+				purchaseOrderInstance.setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
+				invoiceInstance.getPurchaseOrder().setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
+				invoiceInstance.setPurchaseOrder(purchaseOrderInstance);
+			}
+			else{
+				invoiceInstance.getPurchaseOrder().setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
+				invoiceInstance.getPurchaseOrder().setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
+				if (null != pInvoice.getPurchaseOrder()){
+					invoiceInstance.getPurchaseOrder().setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
+					invoiceInstance.getPurchaseOrder().setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
+				}
+				invoiceInstance.getPurchaseOrder().setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
+				invoiceInstance.getPurchaseOrder().setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
+			}
+		} catch (Exception e) {
+			logger.error("Error during getting BAPI  "+ZMM_BAPI_RETRIEVE_TO_DCTM+" informations : "+ e.getMessage());
+		}	
+		logger.debug("Retrieving SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
 		return invoiceInstance;
 	}
 
