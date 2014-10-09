@@ -47,9 +47,9 @@ public class BusinessService {
 		
 		//Updating DCTM Invoice
 		pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
-		
+		//TODO
 		//Link SAP Document with Documentum object
-		invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
+		//invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
 		
 		return pInvoice;
 		 	
@@ -112,7 +112,37 @@ public class BusinessService {
 		}
 	}
 	
-	
+	//Create invoice with status 6 in SAP
+		public Invoice createStatusSixInvoices(Invoice pInvoice){
+			// Get Invoice Data from Documentum
+			pInvoice  = invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
+			
+			// Check Blocking code
+			if (pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.TradingCoating.getCategoryId() || pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.ManualFiCoInput.getCategoryId())
+			{
+				if (pInvoice.getBlockingCodeT() == "F"){
+					pInvoice.setBlockingCodeT("T");
+				}
+			}
+			
+			//Creating MM ou FI SAP Invoice
+			if(pInvoice.getPurchaseOrder()!= null)
+			{
+				if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
+					pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
+				else
+					pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+			}
+			
+			//Updating DCTM Invoice
+			pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+			//TODO
+			//Link SAP Document with Documentum object
+			//invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
+			
+			return pInvoice;
+		}
+		
 	//Synchronise the status 7 invoices from SAP
 	public void synchroniseStatusSevenInvoices(){
 		List<Invoice> listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_SEVEN()));

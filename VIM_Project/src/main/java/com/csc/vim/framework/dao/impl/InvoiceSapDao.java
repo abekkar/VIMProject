@@ -103,7 +103,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 	private static final String THRESHOLDKEY        = "THRESHOLDKEY";
 	private static final String THRESHOLD_DESCR     = "THRESHOLD_DESCR";
 	private static final String THRESHOLD_UNIT      = "THRESHOLD_UNIT";    
-	private static final String PAY_CONDITION       = "PAY_CONDITION";
+	private static final String PAY_CONDITION       = "PMNTTRMS";
 	private static final String INV_SUPPLIER_ORIGIN = "INV_SUPPLIER_ORIGIN";
 	private static final String UCT                 = "UCT";
 	private static final String LCT                 = "LCT";
@@ -362,6 +362,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_ERROR);
 			}
 		} catch (Exception e) {
+			pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_ERROR);
 			logger.error("Error during creating invoice with the reference :"+pInvoice.getInvoiceReference()+" with BAPI  "+BAPI_INCOMINGINVOICE_SAVE+" informations : "+ e.getMessage());
 		}	
 		logger.debug("Creating SAP invoice for the invoice reference :  " + pInvoice.getInvoiceReference());
@@ -650,7 +651,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
 			invoiceInstance.setCompanyCode(COMPANY_CODE);
 			invoiceInstance.setSelectedIban(function.getExportParameterList().getStructure(SAP_IBAN_STRUCTURE).getString(SUPPLIER_IBAN));
-			invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
+			invoiceInstance.setPaymentCondition(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PAY_CONDITION));
 			invoiceInstance.setSapBlockingCode(function.getExportParameterList().getStructure(BLOCKING_CODE_STRUCTURE).getString(BLOKING_CODE));
 			invoiceInstance.setInvoicecountryOrigin(function.getExportParameterList().getString(INV_SUPPLIER_ORIGIN));
 			if (null != function.getExportParameterList().getString(UCT) && "" !=function.getExportParameterList().getString(UCT))

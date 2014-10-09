@@ -22,12 +22,12 @@ public class InvoiceController {
 	/*
 	 * AV2 Process
 	 */
-	@RequestMapping(value = "/V1/SAV2/{r_object_id}", method = RequestMethod.GET)
-	public Invoice processAV2(@PathVariable String r_object_id){
+	@RequestMapping(value = "/V1/SAV2", method = RequestMethod.GET)
+	public Invoice processAV2(@RequestParam String r_object_id,@RequestParam String po_number){
 		Invoice pInvoice = new Invoice();
 		pInvoice.setrObjectId(r_object_id);
 		pInvoice.setPurchaseOrder(new PurchaseOrder());
-//		pInvoice.getPurchaseOrder().setPoNumber(po_number);
+		pInvoice.getPurchaseOrder().setPoNumber(po_number);
 		return businessServiceInstance.processAV2(pInvoice);
 	}
 	

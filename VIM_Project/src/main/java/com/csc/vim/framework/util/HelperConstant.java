@@ -15,5 +15,5 @@ public class HelperConstant {
 
 	public Integer INV_STATUS_SAP_ERROR = 3;
 
-	public Integer INV_STATUS_SAP_OK = 5;
+	public Integer INV_STATUS_SAP_OK = 7;
 }

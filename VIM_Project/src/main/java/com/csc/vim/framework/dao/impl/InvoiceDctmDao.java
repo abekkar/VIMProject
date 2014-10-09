@@ -46,127 +46,127 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	protected final Logger logger = LoggerFactory
 			.getLogger(InvoiceDctmDao.class);
 	
-	private static String NAMESPACE = "demat";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_invoice_line,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_purchase_order,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_invoice_bankinforma,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_APPROVER = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where "+NAMESPACE+"_message.message_code='AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where  "+NAMESPACE+"_message.message_code<>'AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
-	private static String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE+"_invoice where invoice_status='";
+	private static final String NAMESPACE = "demat";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_invoice_line,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_purchase_order,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_invoice_bankinforma,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_APPROVER = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where "+NAMESPACE+"_message.message_code='AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where  "+NAMESPACE+"_message.message_code<>'AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE+"_invoice where invoice_status='";
 
 	/*
 	 *  Invoice Properties
 	 */
-	private static String INVOICE_TYPE            = "invoice_type";
-	private static String INVOICE_CATEGORY        = "invoice_category";
-	private static String FIRST_LEVEL_CONTROLLER  = "first_level_controller";
-	private static String GLOBAL_LEVEL_CONTROLLER = "global_level_controller"; 
-	private static String SELECTED_APPROVAL_GROUP = "selected_approval_group";
-	private static String INVOICE_CURRENCY        = "invoice_currency";
-	private static String INVOICE_DATE            = "invoice_date";
-	private static String COMPANY_CODE            = "company_code";
-	private static String INVOICE_FAMILY          = "invoice_family";
-	private static String INVOICE_GROSS_AMOUNT    = "invoice_gross_amount";
-	private static String INVOICE_NET_AMOUNT      = "invoice_net_amount";
-	private static String INVOICE_NET_AMOUNT_EUR  = "invoice_net_amount_eur";
-	private static String INVOICE_VAT_AMOUNT      = "invoice_vat_amount";
-	private static String INVOICE_REFERENCE       = "invoice_reference";
-	private static String INVOICE_STATUS          = "invoice_status";
-	private static String BLOCKING_CODE_SAP       = "blocking_code_sap";
-	private static String BLOCKING_CODE_T         = "blocking_code_t";
-	private static String BLOCKING_CODE_V         = "blocking_code_v";
-	private static String INVOICE_LCT             = "invoice_lct";
-	private static String INVOICE_UCT             = "invoice_uct";
-	private static String INVOICE_COUNTRY_ORIGIN  = "invoice_country_origin";
-	private static String SAP_FI_DOC_NUM          = "sap_fi_document_number";
-	private static String SAP_MM_DOC_NUM          = "sap_mm_document_number";
-	private static String SAP_FI_DOC_DATE         = "sap_fi_document_date";
-	private static String SAP_MM_DOC_DATE         = "sap_mm_document_date";
-	private static String FREIGHT_COST            = "freight_cost";
-	private static String PACKAGING_COST          = "packaging_cost";
-	private static String PAYMENT_CONDITION       = "payment_condition";
-	private static String SEL_THRESHOLD_AMOUNT    = "selected_threshold_amount";
-//	private static String SELECTED_IBAN           = "selected_iban";
-	private static String SCANNING_REFERENCE      = "scanning_reference";
-	private static String SCANNING_DATE           = "scanning_date";
-	private static String COMPANY_TAX_NUMBER      = "company_tax_number";
-	private static String COMPANU_VAT_NUMBER      = "company_vat_number";
-	private static String SAP_INVOICE_CREATOR     = "sap_invoice_creator";
-	private static String SALES_ORDER_NUMBER      = "sales_order_number";
-	private static String SALES_ORDER_POSITION    = "sales_order_position";
-	private static String GOOD_RECEIPTS           = "good_receipts";
+	private static final String INVOICE_TYPE            = "invoice_type";
+	private static final String INVOICE_CATEGORY        = "invoice_category";
+	private static final String FIRST_LEVEL_CONTROLLER  = "first_level_controller";
+	private static final String GLOBAL_LEVEL_CONTROLLER = "global_level_controller"; 
+	private static final String SELECTED_APPROVAL_GROUP = "selected_approval_group";
+	private static final String INVOICE_CURRENCY        = "invoice_currency";
+	private static final String INVOICE_DATE            = "invoice_date";
+	private static final String COMPANY_CODE            = "company_code";
+	private static final String INVOICE_FAMILY          = "invoice_family";
+	private static final String INVOICE_GROSS_AMOUNT    = "invoice_gross_amount";
+	private static final String INVOICE_NET_AMOUNT      = "invoice_net_amount";
+	private static final String INVOICE_NET_AMOUNT_EUR  = "invoice_net_amount_eur";
+	private static final String INVOICE_VAT_AMOUNT      = "invoice_vat_amount";
+	private static final String INVOICE_REFERENCE       = "invoice_reference";
+	private static final String INVOICE_STATUS          = "invoice_status";
+	private static final String BLOCKING_CODE_SAP       = "blocking_code_sap";
+	private static final String BLOCKING_CODE_T         = "blocking_code_t";
+	private static final String BLOCKING_CODE_V         = "blocking_code_v";
+	private static final String INVOICE_LCT             = "invoice_lct";
+	private static final String INVOICE_UCT             = "invoice_uct";
+	private static final String INVOICE_COUNTRY_ORIGIN  = "invoice_country_origin";
+	private static final String SAP_FI_DOC_NUM          = "sap_fi_document_number";
+	private static final String SAP_MM_DOC_NUM          = "sap_mm_document_number";
+	private static final String SAP_FI_DOC_DATE         = "sap_fi_document_date";
+	private static final String SAP_MM_DOC_DATE         = "sap_mm_document_date";
+	private static final String FREIGHT_COST            = "freight_cost";
+	private static final String PACKAGING_COST          = "packaging_cost";
+	private static final String PAYMENT_CONDITION       = "payment_condition";
+	private static final String SEL_THRESHOLD_AMOUNT    = "selected_threshold_amount";
+//	private static final String SELECTED_IBAN           = "selected_iban";
+	private static final String SCANNING_REFERENCE      = "scanning_reference";
+	private static final String SCANNING_DATE           = "scanning_date";
+	private static final String COMPANY_TAX_NUMBER      = "company_tax_number";
+	private static final String COMPANU_VAT_NUMBER      = "company_vat_number";
+	private static final String SAP_INVOICE_CREATOR     = "sap_invoice_creator";
+	private static final String SALES_ORDER_NUMBER      = "sales_order_number";
+	private static final String SALES_ORDER_POSITION    = "sales_order_position";
+	private static final String GOOD_RECEIPTS           = "good_receipts";
 	
 	/*
 	 * Invoice Line Properties
 	 */
-	private static String R_OBJECT_ID             = "r_object_id";
-	private static String VENDOR_ASSIGNMENT_NUMBER= "vendor_assignment_number";
-	private static String COST_CENTER             = "cost_center";
-	private static String GL_ITEM_TEXT            = "gl_item_text";
-	private static String GL_ACCOUNT              = "gl_account";
-	private static String GL_ACCOUNT_NUMBER       = "gl_account_number";
-	private static String INTERNAL_ORDER          = "internal_order";
-	private static String PARTNER_PROFIT_CENTER   = "partner_profit_center";
-	private static String PLANT_NUMBER            = "plant_number";
-	private static String PROFIT_CENTER           = "profit_center";
-	private static String QUANTITY                = "quantity";
-	private static String SALES_ORDER             = "sales_order";
-	private static String ISALES_ORDER_POSITION   = "sales_order_position";
-	private static String VENDOR_ITEM_NUMBER      = "vendor_item_number";
-	private static String VENDOR_ITEM_TEXT        = "vendor_item_text";
-	private static String WBS                     = "wbs";
-	private static String MATERIAL                = "material";
-	private static String SALES_TAX_ORDER         = "sales_tax_order";
-	private static String GL_SALES_TAX_CODE       = "gl_sales_tax_code";
-	private static String TAX_RATE                = "tax_rate";
-	private static String BASE_LINE_DATE          = "base_line_date";
-	private static String TAX_ITEM_NUMBER         = "tax_item_number";
-	private static String TAX_GL_ACCOUNT          = "tax_gl_account";
-	private static String GL_ASSIGNMENT_NUMBER    = "gl_assignment_number";
-	private static String QUANTITY_UNIT           = "quantity_unit";
-	private static String INVOICE_IBAN_LIST       ="invoice_iban";
+	private static final String R_OBJECT_ID             = "r_object_id";
+	private static final String VENDOR_ASSIGNMENT_NUMBER= "vendor_assignment_number";
+	private static final String COST_CENTER             = "cost_center";
+	private static final String GL_ITEM_TEXT            = "gl_item_text";
+	private static final String GL_ACCOUNT              = "gl_account";
+	private static final String GL_ACCOUNT_NUMBER       = "gl_account_number";
+	private static final String INTERNAL_ORDER          = "internal_order";
+	private static final String PARTNER_PROFIT_CENTER   = "partner_profit_center";
+	private static final String PLANT_NUMBER            = "plant_number";
+	private static final String PROFIT_CENTER           = "profit_center";
+	private static final String QUANTITY                = "quantity";
+	private static final String SALES_ORDER             = "sales_order";
+	private static final String ISALES_ORDER_POSITION   = "sales_order_position";
+	private static final String VENDOR_ITEM_NUMBER      = "vendor_item_number";
+	private static final String VENDOR_ITEM_TEXT        = "vendor_item_text";
+	private static final String WBS                     = "wbs";
+	private static final String MATERIAL                = "material";
+	private static final String SALES_TAX_ORDER         = "sales_tax_order";
+	private static final String GL_SALES_TAX_CODE       = "gl_sales_tax_code";
+	private static final String TAX_RATE                = "tax_rate";
+	private static final String BASE_LINE_DATE          = "base_line_date";
+	private static final String TAX_ITEM_NUMBER         = "tax_item_number";
+	private static final String TAX_GL_ACCOUNT          = "tax_gl_account";
+	private static final String GL_ASSIGNMENT_NUMBER    = "gl_assignment_number";
+	private static final String QUANTITY_UNIT           = "quantity_unit";
+	private static final String INVOICE_IBAN_LIST       ="invoice_iban";
 	
 	/*
 	 * Supplier Properties
 	 */
-	private static String SUPPLIER_CPD            = "cpd";
-	private static String SUPPLIER_INDUSTRY       = "industry";
-	private static String SUPPLIER_ADRESS         = "adress";
-	private static String SUPPLIER_CITY           = "city";
-	private static String SUPPLIER_COUNTRY        = "country";
-	private static String SUPPLIER_EMAIL          = "email";
-	private static String SUPPLIER_POST_CODE      = "post_code";
-	private static String SUPPLIER_NAME           = "name";
-	private static String SUPPLIER_NUMBER         = "number";
-	private static String SUPPLIER_TAX_NUMBER     = "tax_number";
-	private static String SUPPLIER_VAT_NUMBER     = "vat_number";
-	private static String SUPPLIER_DEFAULT_IBAN   = "default_iban";
+	private static final String SUPPLIER_CPD            = "cpd";
+	private static final String SUPPLIER_INDUSTRY       = "industry";
+	private static final String SUPPLIER_ADRESS         = "adress";
+	private static final String SUPPLIER_CITY           = "city";
+	private static final String SUPPLIER_COUNTRY        = "country";
+	private static final String SUPPLIER_EMAIL          = "email";
+	private static final String SUPPLIER_POST_CODE      = "post_code";
+	private static final String SUPPLIER_NAME           = "name";
+	private static final String SUPPLIER_NUMBER         = "number";
+	private static final String SUPPLIER_TAX_NUMBER     = "tax_number";
+	private static final String SUPPLIER_VAT_NUMBER     = "vat_number";
+	private static final String SUPPLIER_DEFAULT_IBAN   = "default_iban";
 	
 	/*
 	 * Bank Informations Properties 
 	 */
-	private static String ACCOUNT_NAME            = "account_name";
-	private static String BANK_NAME               = "bank_name";
-	private static String BANK_IBAN               = "iban";
+	private static final String ACCOUNT_NAME            = "account_name";
+	private static final String BANK_NAME               = "bank_name";
+	private static final String BANK_IBAN               = "iban";
 	
 	/*
 	 * Purchase Order Properties
 	 */
-	private static String PURCHASE_ORDER_DATE      = "po_date";
-	private static String PURCHASE_ORDER_DOC_DATE  = "po_document_type";
-	private static String PURCHASE_ORDER_NUMBER    = "po_number";
-	private static String PURCHASE_ORDER_NUMBER_POS= "po_number_position";
-	private static String PO_SUPPLIER_NAME         = "supplier_name";
-	private static String PO_SUPPLIER_NUMBER       = "supplier_number";
+	private static final String PURCHASE_ORDER_DATE      = "po_date";
+	private static final String PURCHASE_ORDER_DOC_DATE  = "po_document_type";
+	private static final String PURCHASE_ORDER_NUMBER    = "po_number";
+	private static final String PURCHASE_ORDER_NUMBER_POS= "po_number_position";
+	private static final String PO_SUPPLIER_NAME         = "supplier_name";
+	private static final String PO_SUPPLIER_NUMBER       = "supplier_number";
 	
 	/*
 	 * Approvers Properties
 	 */
-	private static String APPROVER_LOGIN           = "user_login";
-	private static String APPROVER_TEXT            = "message_text";
-	private static String APPROVER_ROLE            = "message_code";
-	private static String APPROVER_OBJECT_ID       = "r_object_id";
+	private static final String APPROVER_LOGIN           = "user_login";
+	private static final String APPROVER_TEXT            = "message_text";
+	private static final String APPROVER_ROLE            = "message_code";
+	private static final String APPROVER_OBJECT_ID       = "r_object_id";
 	
 	/**
 	 * See the IInvoiceDao Interface to get informations about every method
@@ -177,6 +177,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	public Invoice read(Invoice pInvoice) throws JCoException, IOException {
 		try {
 			IDfSession session = dctmInstance.getSession();
+			
 			pInvoice = populateInvoiceProperties(pInvoice, session);
 			pInvoice = populateInvoiceLines(pInvoice, session);
 			pInvoice = populateSupplierDetail(pInvoice, session);
@@ -186,31 +187,44 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			pInvoice = populateprocessors(pInvoice, session);
 			dctmInstance.closeSession(session);
 		} catch (DfIdentityException e) {
-			logger.error(e.getMessage());
+			if (logger.isErrorEnabled())
+				logger.error("Error during reading invoice informations from DCTM : "+e.getMessage());
 		} catch (DfAuthenticationException e) {
-			logger.error(e.getMessage());
+			if (logger.isErrorEnabled())
+				logger.error("Error during reading invoice informations from DCTM : "+e.getMessage());
 		} catch (DfPrincipalException e) {
-			logger.error(e.getMessage());
+			if (logger.isErrorEnabled())
+				logger.error("Error during reading invoice informations from DCTM : "+e.getMessage());
 		} catch (DfServiceException e) {
-			logger.error(e.getMessage());
+			if (logger.isErrorEnabled())	
+				logger.error("Error during reading invoice informations from DCTM : "+e.getMessage());
 		} catch (DfException e) {
-			logger.error(e.getMessage());
+			if (logger.isErrorEnabled())
+				logger.error("Error during reading invoice informations from DCTM : "+e.getMessage());
+		} catch (Exception e) {
+			if (logger.isErrorEnabled())
+				logger.error("Cannot retrieve informations for the invoice : "+e.getMessage());
 		}
 		return pInvoice;
 	}
 
-	public Invoice update(Invoice pInvoice) throws Exception {
-
-		IDfQuery DQLquery = new DfQuery();
-		IDfSession session = dctmInstance.getSession();
-		DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
-		DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);		 
-		DQLquery = updateSupplierDetail(pInvoice, DQLquery, session);
-		DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);
-		DQLquery = updatePurchaseOrder(pInvoice, DQLquery, session);
-		DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
-		DQLquery = updateBankInformations(pInvoice, DQLquery, session);
-		DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+	public Invoice update(Invoice pInvoice) {
+		try
+		{
+			IDfQuery DQLquery = new DfQuery();
+			IDfSession session = dctmInstance.getSession();
+			DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);		 
+			DQLquery = updateSupplierDetail(pInvoice, DQLquery, session);
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);
+			DQLquery = updatePurchaseOrder(pInvoice, DQLquery, session);
+			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+			DQLquery = updateBankInformations(pInvoice, DQLquery, session);
+			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+		}catch(Exception e){
+			if (logger.isErrorEnabled())
+				logger.error("Cannot update invoice into DCTM caused by: "+e.getMessage());
+		}
 		return pInvoice;
 	}
 
@@ -309,7 +323,8 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					}
 			}
 		} catch (DfException e) {
-			logger.error("Error during populating Invoice Properties From DCTM "+ e.getMessage());
+			if (logger.isErrorEnabled())
+				logger.error("Error during populating Invoice Properties From DCTM "+ e.getMessage());
 		}
 		return pInvoice;
 	}
@@ -504,7 +519,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		if (null != pInvoice.getGlobalLevelController() )	
 			invoiceDqlUpdater.append("SET "+GLOBAL_LEVEL_CONTROLLER+" ='"+ pInvoice.getGlobalLevelController() + "' ");
 		invoiceDqlUpdater.append("SET "+SELECTED_APPROVAL_GROUP+" ='"+ pInvoice.getSelectedApprovalGroup() + "' ");
-		if (null !=pInvoice.getInvoiceCurrency())
+		if (null !=pInvoice.getInvoiceCurrency() && !pInvoice.getInvoiceCurrency().equalsIgnoreCase(""))
 			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" ="+ pInvoice.getInvoiceCurrency() + " ");
 		if (null != pInvoice.getInvoiceDate() )
 			if (!pInvoice.getInvoiceDate().equalsIgnoreCase("nulldate")  )
@@ -512,13 +527,13 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		invoiceDqlUpdater.append("SET "+COMPANY_CODE+" ='"+ pInvoice.getCompanyCode() + "' ");
 		invoiceDqlUpdater.append("SET "+INVOICE_FAMILY+"="+ pInvoice.getInvoiceFamily() + " ");
 		if (null != pInvoice.getInvoiceGrossAmount() )
-			invoiceDqlUpdater.append("SET "+INVOICE_GROSS_AMOUNT+" ='"+ pInvoice.getInvoiceGrossAmount() + "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_GROSS_AMOUNT+" ="+ pInvoice.getInvoiceGrossAmount() + " ");
 		if (null != pInvoice.getInvoiceNetAmount() )
-			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT+" ='"+ pInvoice.getInvoiceNetAmount() + "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT+" ="+ pInvoice.getInvoiceNetAmount() + " ");
 		if (null !=  pInvoice.getInvoiceNetAmountEur() )
-			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT_EUR+" ='"+ pInvoice.getInvoiceNetAmountEur() + "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT_EUR+" ="+ pInvoice.getInvoiceNetAmountEur() + " ");
 		if (null != pInvoice.getInvoiceVatAmount() )
-			invoiceDqlUpdater.append("SET "+INVOICE_VAT_AMOUNT+" ='"+ pInvoice.getInvoiceVatAmount() + "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_VAT_AMOUNT+" ="+ pInvoice.getInvoiceVatAmount() + " ");
 		invoiceDqlUpdater.append("SET "+INVOICE_REFERENCE+" ='"+ pInvoice.getInvoiceReference() + "' ");
 		invoiceDqlUpdater.append("SET "+INVOICE_STATUS+" ="+ pInvoice.getInvoiceStatus() + " ");
 		invoiceDqlUpdater.append("SET "+BLOCKING_CODE_SAP+" ='"+ pInvoice.getSapBlockingCode() + "' ");
@@ -531,9 +546,9 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		else
 			invoiceDqlUpdater.append("SET "+ BLOCKING_CODE_V+" ="+ true + " ");
 		if (null != pInvoice.getInvoiceLCT() )
-			invoiceDqlUpdater.append("SET "+INVOICE_LCT+" ='"+ pInvoice.getInvoiceLCT()+ "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_LCT+" ="+pInvoice.getInvoiceLCT()+ " ");
 		if (null != pInvoice.getInvoiceUCT() )
-		invoiceDqlUpdater.append("SET "+INVOICE_UCT+" ='"+ pInvoice.getInvoiceUCT() + "' ");
+		invoiceDqlUpdater.append("SET "+INVOICE_UCT+" ="+  pInvoice.getInvoiceUCT() + " ");
 		invoiceDqlUpdater.append("SET "+INVOICE_COUNTRY_ORIGIN+" ='"+ pInvoice.getInvoicecountryOrigin() + "' ");
 		invoiceDqlUpdater.append("SET "+SAP_FI_DOC_NUM+" ='"+ pInvoice.getSapFIDocumentNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+SAP_MM_DOC_NUM+" ='"+ pInvoice.getSapMMDocumentNumber() + "' ");
@@ -660,18 +675,21 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			{
 				if (pInvoice.getSupplierDetail()!= null){
 					StringBuilder SupplierDqlUpdater = new StringBuilder("UPDATE "+NAMESPACE+"_supplier OBJECTS ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_DEFAULT_IBAN+" =" +pInvoice.getSupplierDetail().getSupplierSelectedIban()+ " ");
+					if (pInvoice.getSupplierDetail().getSupplierSelectedIban() != null)
+						SupplierDqlUpdater.append("SET "+SUPPLIER_DEFAULT_IBAN+" ='" +pInvoice.getSupplierDetail().getSupplierSelectedIban()+ "' ");
 					SupplierDqlUpdater.append("SET "+SUPPLIER_CPD+" =" +pInvoice.getSupplierDetail().isSupplierCPD()+ " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_INDUSTRY+" =" +pInvoice.getSupplierDetail().getSupplierIndustry() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_ADRESS+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceAddress()+ " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_CITY+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceCity() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_COUNTRY+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceCountry() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_EMAIL+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceEmail()+ " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_POST_CODE+" =" +pInvoice.getSupplierDetail().getSupplierInvoicePostCode() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_NAME+" =" +pInvoice.getSupplierDetail().getSupplierName() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_TAX_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierTaxNumber() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_VAT_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierVatNumber() + " ");
-					SupplierDqlUpdater.append("SET "+SUPPLIER_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierNumber() + " ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_INDUSTRY+" ='" +pInvoice.getSupplierDetail().getSupplierIndustry() + "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_ADRESS+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceAddress()+ "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_CITY+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceCity() + "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_COUNTRY+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceCountry() + "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_EMAIL+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceEmail()+ "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_POST_CODE+" ='" +pInvoice.getSupplierDetail().getSupplierInvoicePostCode() + "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_NAME+" ='" +pInvoice.getSupplierDetail().getSupplierName() + "' ");
+					if (pInvoice.getSupplierDetail().getSupplierTaxNumber() != null)
+						SupplierDqlUpdater.append("SET "+SUPPLIER_TAX_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierTaxNumber() + "' ");
+					if (pInvoice.getSupplierDetail().getSupplierVatNumber() != null)
+						SupplierDqlUpdater.append("SET "+SUPPLIER_VAT_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierVatNumber() + "' ");
+					SupplierDqlUpdater.append("SET "+SUPPLIER_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierNumber() + "' ");
 					SupplierDqlUpdater.append(" WHERE r_object_id = '" +pInvoice.getSupplierDetail().getrObjectId() + "' ");
 					logger.debug("Updating Supplier: "+ SupplierDqlUpdater.toString());
 					DQLquery.setDQL(SupplierDqlUpdater.toString());
@@ -682,19 +700,21 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 					if (null != pInvoice.getSupplierDetail() )
 					{
 						StringBuilder supplierDqlCreator = new	 StringBuilder("CREATE supplier OBJECTS ");
-						supplierDqlCreator.append("SET "+SUPPLIER_DEFAULT_IBAN+" =" +pInvoice.getSupplierDetail().getSupplierSelectedIban()+ " ");
+						if (pInvoice.getSupplierDetail().getSupplierSelectedIban() != null)
+							supplierDqlCreator.append("SET "+SUPPLIER_DEFAULT_IBAN+" ='" +pInvoice.getSupplierDetail().getSupplierSelectedIban()+ "' ");
 						supplierDqlCreator.append("SET "+SUPPLIER_CPD+" =" +pInvoice.getSupplierDetail().isSupplierCPD()+ " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_INDUSTRY+" =" +pInvoice.getSupplierDetail().getSupplierIndustry() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_ADRESS+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceAddress()+ " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_CITY+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceCity() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_COUNTRY+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceCountry() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_EMAIL+" =" +pInvoice.getSupplierDetail().getSupplierInvoiceEmail()+ " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_POST_CODE+" =" +pInvoice.getSupplierDetail().getSupplierInvoicePostCode() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_NAME+" =" +pInvoice.getSupplierDetail().getSupplierName() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_TAX_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierTaxNumber() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_VAT_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierVatNumber() + " ");
-						supplierDqlCreator.append("SET "+SUPPLIER_NUMBER+" =" +pInvoice.getSupplierDetail().getSupplierNumber() + " ");
-						supplierDqlCreator.append(" WHERE r_object_id = '" +pInvoice.getSupplierDetail().getrObjectId() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_INDUSTRY+" ='" +pInvoice.getSupplierDetail().getSupplierIndustry() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_ADRESS+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceAddress()+ "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_CITY+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceCity() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_COUNTRY+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceCountry() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_EMAIL+" ='" +pInvoice.getSupplierDetail().getSupplierInvoiceEmail()+ "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_POST_CODE+" ='" +pInvoice.getSupplierDetail().getSupplierInvoicePostCode() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_NAME+" ='" +pInvoice.getSupplierDetail().getSupplierName() + "' ");
+						if (pInvoice.getSupplierDetail().getSupplierTaxNumber() != null)
+							supplierDqlCreator.append("SET "+SUPPLIER_TAX_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierTaxNumber() + "' ");
+						if (pInvoice.getSupplierDetail().getSupplierVatNumber() != null)
+							supplierDqlCreator.append("SET "+SUPPLIER_VAT_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierVatNumber() + "' ");
+						supplierDqlCreator.append("SET "+SUPPLIER_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierNumber() + "' ");
 						 logger.debug("Creating Supplier: " +supplierDqlCreator.toString());
 						 DQLquery.setDQL(supplierDqlCreator.toString());
 					}
