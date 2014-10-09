@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.csc.vim.framework.model.Invoice;
@@ -21,12 +22,12 @@ public class InvoiceController {
 	/*
 	 * AV2 Process
 	 */
-	@RequestMapping(value = "/av2/{r_object_id}/{po_number}", method = RequestMethod.GET)
-	public Invoice processAV2(@PathVariable String r_object_id,@PathVariable String po_number){
+	@RequestMapping(value = "/V1/SAV2/{r_object_id}", method = RequestMethod.GET)
+	public Invoice processAV2(@PathVariable String r_object_id){
 		Invoice pInvoice = new Invoice();
 		pInvoice.setrObjectId(r_object_id);
 		pInvoice.setPurchaseOrder(new PurchaseOrder());
-		pInvoice.getPurchaseOrder().setPoNumber(po_number);
+//		pInvoice.getPurchaseOrder().setPoNumber(po_number);
 		return businessServiceInstance.processAV2(pInvoice);
 	}
 	

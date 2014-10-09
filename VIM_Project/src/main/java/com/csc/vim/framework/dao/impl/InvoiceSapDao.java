@@ -131,7 +131,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 	/*
 	 * Return ZMM_BAPI_INCOMINGINVOICE_SAVE Properties
 	 */
-	
+	private static final String ZBLOCKINGCODE        = "ZBLOCKING_CODE";
 	private static final String INVOICE_DOC_NUMBER   = "INVOICEDOCNUMBER";
 	private static final String FISCAL_YEAR          = "FISCALYEAR";
 	/**
@@ -195,7 +195,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			e1.printStackTrace();
 		} 
 
-		logger.debug("Executing " + BAPI_INCOMINGINVOICE_SAVE);
+		logger.debug("Creating Invoice with reference: "+pInvoice.getInvoiceReference()+" using BAPI: " +BAPI_INCOMINGINVOICE_SAVE);
 
 		JCoFunction function = null;
 		try {
@@ -203,103 +203,101 @@ public class InvoiceSapDao extends AbstractSapDao {
 		} catch (JCoException e1) {
 			e1.printStackTrace();
 		}
-
-		// ==============================================================================================
-		// ======================================== 1/ SET INUPUT =======================================
-		// ==============================================================================================
-		function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
-		//TODO
-		//		function.getImportParameterList().setValue("ZLIFNR", pInvoice.getSupplierTaxNumber());
-		// *****************************
-		// *** Structure HEADERDATA ****
-		// *****************************
-		com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure("HEADERDATA");
-		//TODO
-		//Modify the format
-		// Document date
-		strucHeaderData.setValue("DOC_DATE", pInvoice.getInvoiceDate());
-		strucHeaderData.setValue("DOC_TYPE", DOC_TYPE);
-		// Invoice Reference
-		strucHeaderData.setValue("REF_DOC_NO", pInvoice.getInvoiceReference());
-		// Invoice (X) or Asset
-		if ( pInvoice.getInvoiceType() == "0" )
-			strucHeaderData.setValue("INVOICE_IND", SAP_X_VALUE);
-		else
-			strucHeaderData.setValue("INVOICE_IND", "");
-		// SAP CODE of the client company
-		strucHeaderData.setValue("COMP_CODE", COMPANY_CODE);
-		//Invoice Currency
-		strucHeaderData.setValue("CURRENCY", pInvoice.getInvoiceCurrency());
-		// physical reference provided by Captiva
-		strucHeaderData.setValue("HEADER_TXT", pInvoice.getScanningReference());
-		//Correspond a la date de base soit la date de calcul pour le delai de paiement (=date de reception)
-		//Recuperation de la date du document
-		strucHeaderData.setValue("PSTNG_DATE", pInvoice.getScanningDate());
-		//TODO
-		//Verify specification 
-		//Payment Mode
-		strucHeaderData.setValue("PYMT_METH", parametersProperties.getPaymentMode());
-		//Payment Condition
-		strucHeaderData.setValue("PMNTTRMS", parametersProperties.getPaymentCondition());	
-		// GRoss Amount
-		DecimalFormat transform = new DecimalFormat("0.00");
-		String gross_amount = transform.format(pInvoice.getInvoiceGrossAmount());
-		gross_amount = gross_amount.replace(",", ".");
-		strucHeaderData.setValue("GROSS_AMOUNT", Double.parseDouble(gross_amount));
-		//TODO
-		//Validate VAT_AMOUNT Field in SAP BAPI
-		//VAT AMOUNT
-		String vat_amount = transform.format(pInvoice.getInvoiceVatAmount());
-		vat_amount = vat_amount.replace(",", ".");
-		strucHeaderData.setValue("VAT_AMOUNT", Double.parseDouble(vat_amount));
+		try
+		{
+			// ==============================================================================================
+			// ======================================== 1/ SET INUPUT =======================================
+			// ==============================================================================================
+			if (pInvoice.getInvoiceCategory()== 1 || pInvoice.getInvoiceCategory()== 0)
+				function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
+			if (pInvoice.getSapBlockingCode()!= null)
+				function.getImportParameterList().setValue("PBLOCK", pInvoice.getSapBlockingCode());
+			// *****************************
+			// *** Structure HEADERDATA ****
+			// *****************************
+			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure("HEADERDATA");
+			// Document date
+			if (null != pInvoice.getInvoiceDate())
+				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDate(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
+			strucHeaderData.setValue("DOC_TYPE", DOC_TYPE);
+			// Invoice Reference
+			strucHeaderData.setValue("REF_DOC_NO", pInvoice.getInvoiceReference());
+			// Invoice (X) or Asset
+			if ( pInvoice.getInvoiceType() == "0" )
+				strucHeaderData.setValue("INVOICE_IND", SAP_X_VALUE);
+			else
+				strucHeaderData.setValue("INVOICE_IND", "");
+			// SAP CODE of the client company
+			strucHeaderData.setValue("COMP_CODE", COMPANY_CODE);
+			//Invoice Currency
+			strucHeaderData.setValue("CURRENCY", pInvoice.getInvoiceCurrency());
+			if (null != pInvoice.getScanningDate() ){
+				strucHeaderData.setValue("BLINE_DATE", pInvoice.getScanningDate());
+				//Recuperation de la date du document
+				strucHeaderData.setValue("PSTNG_DATE", pInvoice.getScanningDate());
+			}
+				
+			
+			// physical reference provided by Captiva
+			strucHeaderData.setValue("HEADER_TXT", pInvoice.getScanningReference());
+			//Correspond a la date de base soit la date de calcul pour le delai de paiement (=date de reception)
+			//TODO
+			//Payment Mode
+			strucHeaderData.setValue("PYMT_METH", parametersProperties.getPaymentMode());
+			//Payment Condition
+			strucHeaderData.setValue("PMNTTRMS", pInvoice.getPaymentCondition());	
+			// GRoss Amount
+			DecimalFormat transform = new DecimalFormat("0.00");
+			String gross_amount = transform.format(pInvoice.getInvoiceGrossAmount());
+			gross_amount = gross_amount.replace(",", ".");
+			strucHeaderData.setValue("GROSS_AMOUNT", Double.parseDouble(gross_amount));
+			
+			// ****************************************
+			// *** ADDITIONALHEADERDATA STRUCTURE  ****
+			// ****************************************
+			com.sap.conn.jco.JCoStructure strucAdditionalHeadData = function.getImportParameterList().getStructure(ADDITIONAL_HEADERDATA_STRUCTURE);
+			
+			// DEL_COSTS (Indicator: freight and packaging cost)
+			strucAdditionalHeadData.setValue("DEL_COSTS", pInvoice.getPackagingCosts()+pInvoice.getFreightCosts());
+			
+			//ASSIGN_DELIV (Indicator: Delivery item assignment): X
+			strucAdditionalHeadData.setValue("ASSIGN_DELIV", SAP_X_VALUE);
+			
+			// SEL_GOODS (Indicator: Goods invoice (X) /Service)
+			strucAdditionalHeadData.setValue("SEL_GOODS", SAP_X_VALUE);
 		
-		//TODO 
-		//ADD Profit Center
-//		strucHeaderData.setValue("PROFIT_CENTER", "");
-		
-		// ****************************************
-		// *** ADDITIONALHEADERDATA STRUCTURE  ****
-		// ****************************************
-		com.sap.conn.jco.JCoStructure strucAdditionalHeadData = function.getImportParameterList().getStructure(ADDITIONAL_HEADERDATA_STRUCTURE);
-		
-		// DEL_COSTS (Indicator: freight and packaging cost)
-		strucAdditionalHeadData.setValue("DEL_COSTS", pInvoice.getPackagingCosts()+pInvoice.getFreightCosts());
-		
-		//ASSIGN_DELIV (Indicator: Delivery item assignment): X
-		strucAdditionalHeadData.setValue("ASSIGN_DELIV", SAP_X_VALUE);
-		
-		// SEL_GOODS (Indicator: Goods invoice (X) /Service)
-		strucAdditionalHeadData.setValue("SEL_GOODS", SAP_X_VALUE);
+			//DELIV_POSTING (Posting logic for delivery items (Invoice=S/Credit memo=H):
+			if ( pInvoice.getInvoiceType() == "0" )
+				strucAdditionalHeadData.setValue("DELIV_POSTING", SAP_S_VALUE);
+			else
+				strucAdditionalHeadData.setValue("DELIV_POSTING", SAP_H_VALUE);
+			
+			// delete or uncomment
+			//strucAdditionalHeadData.setValue("ASSIGN_RETURN", SAP_X_VALUE);
+			//strucAdditionalHeadData.setValue("RETURN_POSTING", SAP_H_VALUE);
 	
-		//DELIV_POSTING (Posting logic for delivery items (Invoice=S/Credit memo=H):
-		if ( pInvoice.getInvoiceType() == "0" )
-			strucAdditionalHeadData.setValue("DELIV_POSTING", SAP_S_VALUE);
-		else
-			strucAdditionalHeadData.setValue("DELIV_POSTING", SAP_H_VALUE);
+			// ***********************
+			// *** TABLE SELECT PO ***
+			// ***********************
+			if (null != pInvoice.getPurchaseOrder())
+			{
+				com.sap.conn.jco.JCoTable tableSelectPO = function.getTableParameterList().getTable("SELECTPO");
+				tableSelectPO.appendRow();
+				tableSelectPO.setValue("PO_NUMBER", pInvoice.getPurchaseOrder().getPoNumber());
 		
-		//TODO
-		// delete or uncomment
-		//strucAdditionalHeadData.setValue("ASSIGN_RETURN", SAP_X_VALUE);
-		//strucAdditionalHeadData.setValue("RETURN_POSTING", SAP_H_VALUE);
-
-		// ***********************
-		// *** TABLE SELECT PO ***
-		// ***********************
-		com.sap.conn.jco.JCoTable tableSelectPO = function.getTableParameterList().getTable("SELECTPO");
-		tableSelectPO.appendRow();
-		tableSelectPO.setValue("PO_NUMBER", pInvoice.getPurchaseOrder().getPoNumber());
-
-		// Specifiy if the invoice is with PO+GR or only with PO
-		if (null != pInvoice.getPurchaseOrder().getPoNumberPosition())
-		tableSelectPO.setValue("PO_ITEM", pInvoice.getPurchaseOrder().getPoNumberPosition());
-
-		// *********************
-		// *** Table TAXDATA ***
-		// *********************
-		com.sap.conn.jco.JCoTable  tabTAXDATA = function.getTableParameterList().getTable("TAXDATA");
-		tabTAXDATA.appendRow();
-		tabTAXDATA.setValue("TAX_AMOUNT", pInvoice.getInvoiceVatAmount());
-
+				// Specifiy if the invoice is with PO+GR or only with PO
+				if (null != pInvoice.getPurchaseOrder().getPoNumberPosition())
+				tableSelectPO.setValue("PO_ITEM", pInvoice.getPurchaseOrder().getPoNumberPosition());
+			}
+			//		// *********************
+			//		// *** Table TAXDATA ***
+			//		// *********************
+			//		com.sap.conn.jco.JCoTable  tabTAXDATA = function.getTableParameterList().getTable("TAXDATA");
+			//		tabTAXDATA.appendRow();
+			//		tabTAXDATA.setValue("TAX_AMOUNT", pInvoice.getInvoiceVatAmount());
+		} catch (Exception e1) {
+			logger.error("Error during setting BAPI "+BAPI_INCOMINGINVOICE_SAVE+" Fields : "+ e1.getMessage());
+		}
 		// =============================================================================================
 		// ======================================== 2/ EXECUTE =========================================
 		// =============================================================================================
@@ -310,60 +308,63 @@ public class InvoiceSapDao extends AbstractSapDao {
 			e.printStackTrace();
 		}
 
-
-		// =============================================================================================
-		// ====================================== 3/ GET OUTPUT  =======================================
-		// =============================================================================================
-
-		com.sap.conn.jco.JCoTable resultTable = function.getTableParameterList().getTable("RETURN");
-
-		// *******************************
-		// NO ERROR => Get the Document ID
-		// *******************************
-		if (resultTable.getNumRows() == 0) {
-			pInvoice.setSapMMDocumentNumber(function.getExportParameterList().getString(INVOICE_DOC_NUMBER));
-			pInvoice.setSapMMDocumentDate(Integer.parseInt( function.getExportParameterList().getString(FISCAL_YEAR)));
-			// Update the status of the invoice as "In SAP"
-			pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_OK);
-			//TODO
-			//retrieve blocking code from sap and set it in  sap_blocking_code Documentum's field
-			//TODO 
-			//ADD PAYMENT BLOCK CODE
-			
-			logger.warn("Invoice:" + function.getExportParameterList().getString(INVOICE_DOC_NUMBER) + " created with PO=" + pInvoice.getPurchaseOrder().getPoNumber());
-
-		}
-
-		// *******************************
-		// ERROR => Get the list of error
-		// *******************************
-		else {
-			com.sap.conn.jco.JCoTable sapMessageResultTable = function.getTableParameterList().getTable("RETURN");
-			if (sapMessageResultTable.getNumRows() != 0) {
-				pInvoice.setSapReturnMessage(new ArrayList<SapMessage>());
-				for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
-					SapMessage sapMessageInstance = new SapMessage();
-					sapMessageResultTable.setRow(j);
-					sapMessageInstance.setMessageCode(sapMessageResultTable.getString("CODE"));
-					sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
-					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
-						sapMessageInstance.setType(MessageTypeEnum.Succes);
-					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Avert.toString()))
-						sapMessageInstance.setType(MessageTypeEnum.Avert);
-					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Abandon.toString()))
-						sapMessageInstance.setType(MessageTypeEnum.Abandon);
-					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Info.toString()))
-						sapMessageInstance.setType(MessageTypeEnum.Info);
-					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Error.toString())){
-						sapMessageInstance.setType(MessageTypeEnum.Error);
-						logger.warn("Invoice with PO=" + pInvoice.getPurchaseOrder().getPoNumber() + " error creating the invoice: " + sapMessageInstance.getMessageText());
-					}
-					pInvoice.getSapReturnMessage().add(sapMessageInstance);
-				}
+		try
+		{
+			// =============================================================================================
+			// ====================================== 3/ GET OUTPUT  =======================================
+			// =============================================================================================
+	
+			com.sap.conn.jco.JCoTable resultTable = function.getTableParameterList().getTable("RETURN");
+	
+			// *******************************
+			// NO ERROR => Get the Document ID
+			// *******************************
+			if (resultTable.getNumRows() == 0) {
+				pInvoice.setSapMMDocumentNumber(function.getExportParameterList().getString(INVOICE_DOC_NUMBER));
+				pInvoice.setSapMMDocumentDate(Integer.parseInt( function.getExportParameterList().getString(FISCAL_YEAR)));
+				// Update the status of the invoice as "In SAP"
+				pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_OK);
+				//TODO
+				//retrieve blocking code from sap and set it in  sap_blocking_code Documentum's field
+				// PAYMENT BLOCK CODE
+				pInvoice.setSapBlockingCode(function.getExportParameterList().getString(ZBLOCKINGCODE));
+				logger.warn("Invoice:" + function.getExportParameterList().getString(INVOICE_DOC_NUMBER) + " created with PO=" + pInvoice.getPurchaseOrder().getPoNumber());
+	
 			}
-			pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_ERROR);
-		}
-
+	
+			// *******************************
+			// ERROR => Get the list of error
+			// *******************************
+			else {
+				com.sap.conn.jco.JCoTable sapMessageResultTable = function.getTableParameterList().getTable("RETURN");
+				if (sapMessageResultTable.getNumRows() != 0) {
+					pInvoice.setSapReturnMessage(new ArrayList<SapMessage>());
+					for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
+						SapMessage sapMessageInstance = new SapMessage();
+						sapMessageResultTable.setRow(j);
+						sapMessageInstance.setMessageCode(sapMessageResultTable.getString("CODE"));
+						sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
+						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
+							sapMessageInstance.setType(MessageTypeEnum.Succes);
+						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Avert.toString()))
+							sapMessageInstance.setType(MessageTypeEnum.Avert);
+						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Abandon.toString()))
+							sapMessageInstance.setType(MessageTypeEnum.Abandon);
+						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Info.toString()))
+							sapMessageInstance.setType(MessageTypeEnum.Info);
+						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Error.toString())){
+							sapMessageInstance.setType(MessageTypeEnum.Error);
+							logger.warn("Invoice with PO=" + pInvoice.getPurchaseOrder().getPoNumber() + " error creating the invoice: " + sapMessageInstance.getMessageText());
+						}
+						pInvoice.getSapReturnMessage().add(sapMessageInstance);
+					}
+				}
+				pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error during creating invoice with the reference :"+pInvoice.getInvoiceReference()+" with BAPI  "+BAPI_INCOMINGINVOICE_SAVE+" informations : "+ e.getMessage());
+		}	
+		logger.debug("Creating SAP invoice for the invoice reference :  " + pInvoice.getInvoiceReference());
 		return pInvoice;
 	}
 
@@ -649,7 +650,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
 			invoiceInstance.setCompanyCode(COMPANY_CODE);
 			invoiceInstance.setSelectedIban(function.getExportParameterList().getStructure(SAP_IBAN_STRUCTURE).getString(SUPPLIER_IBAN));
-	//		invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
+			invoiceInstance.setPaymentCondition(function.getExportParameterList().getString(PAY_CONDITION));
 			invoiceInstance.setSapBlockingCode(function.getExportParameterList().getStructure(BLOCKING_CODE_STRUCTURE).getString(BLOKING_CODE));
 			invoiceInstance.setInvoicecountryOrigin(function.getExportParameterList().getString(INV_SUPPLIER_ORIGIN));
 			if (null != function.getExportParameterList().getString(UCT) && "" !=function.getExportParameterList().getString(UCT))
