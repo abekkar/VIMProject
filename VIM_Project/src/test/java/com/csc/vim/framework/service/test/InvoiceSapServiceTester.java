@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.csc.vim.framework.model.Invoice;
 import com.csc.vim.framework.model.PurchaseOrder;
-import com.csc.vim.framework.service.InvoiceSapService;
+import com.csc.vim.framework.service.impl.InvoiceSapService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:servlet-context-test.xml"})

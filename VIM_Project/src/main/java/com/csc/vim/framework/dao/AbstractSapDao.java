@@ -10,8 +10,8 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.csc.vim.framework.model.Invoice;
-import com.csc.vim.framework.util.HelperConstant;
-import com.csc.vim.framework.util.HelperProperties;
+import com.csc.vim.framework.properties.HelperConstant;
+import com.csc.vim.framework.properties.HelperProperties;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoDestinationManager;
 import com.sap.conn.jco.JCoException;
