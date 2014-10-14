@@ -42,7 +42,10 @@ public class BusinessService {
 			if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
 				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
 			else
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+			{
+				if (pInvoice.getInvoiceLines()!= null)
+					pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+			}
 		}
 		
 		//Updating DCTM Invoice
@@ -68,12 +71,16 @@ public class BusinessService {
 		if (pInvoice.getrObjectId()!= null)
 		{
 			invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
-			
-			if ( null != pInvoice.getPurchaseOrder().getPoNumber() )
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
-			else
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
-			
+			//TODO
+			// test sur l'invoice family pour  verifié que la facture et avec ou sans PO
+			if (null != pInvoice.getPurchaseOrder() ) 
+				if ( null != pInvoice.getPurchaseOrder().getPoNumber() )
+					pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
+				else
+				{
+					if (pInvoice.getInvoiceLines()!= null)
+						pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+				}
 			invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
 		}
 	}

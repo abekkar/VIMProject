@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.csc.vim.framework.model.Invoice;
 import com.csc.vim.framework.model.PurchaseOrder;
+import com.csc.vim.framework.properties.RestURIConstants;
 import com.csc.vim.framework.service.BusinessService;
 
 @Controller
@@ -22,7 +23,7 @@ public class InvoiceController {
 	/*
 	 * AV2 Process
 	 */
-	@RequestMapping(value = "/V1/SAV2", method = RequestMethod.GET)
+	@RequestMapping(value = RestURIConstants.PROCESS_AV2, method = RequestMethod.GET)
 	public Invoice processAV2(@RequestParam String r_object_id,@RequestParam String po_number){
 		Invoice pInvoice = new Invoice();
 		pInvoice.setrObjectId(r_object_id);
