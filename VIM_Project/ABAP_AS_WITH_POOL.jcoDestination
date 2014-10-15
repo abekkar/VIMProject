@@ -1,16 +1,8 @@
 #
-#Wed Oct 08 15:24:03 CEST 2014
+#Tue Oct 14 17:11:39 CEST 2014
 jco.client.lang=FR
 jco.client.client=800
 jco.client.passwd=katana
 jco.client.user=PORFILA
 jco.client.sysnr=00
 jco.client.ashost=20.33.93.136
-#Sap Param: 
-#Wed Oct 08 15:24:03 CEST 2014
-jco.client.lang=EN
-jco.client.client=015
-jco.client.passwd=CSC-00000
-jco.client.user=DCTMBATCH
-jco.client.sysnr=03
-jco.client.ashost=CTSR05

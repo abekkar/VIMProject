@@ -132,7 +132,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	 */
 	private static final String SUPPLIER_CPD            = "cpd";
 	private static final String SUPPLIER_INDUSTRY       = "industry";
-	private static final String SUPPLIER_ADRESS         = "address";
+	private static final String SUPPLIER_ADRESS         = "supplier_address";
 	private static final String SUPPLIER_CITY           = "city";
 	private static final String SUPPLIER_COUNTRY        = "country";
 	private static final String SUPPLIER_EMAIL          = "email";

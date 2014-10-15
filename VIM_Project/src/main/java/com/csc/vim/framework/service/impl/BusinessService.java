@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.csc.vim.framework.model.Invoice;
+import com.csc.vim.framework.properties.InvoiceCategoryEnum;
 import com.csc.vim.framework.properties.InvoiceFamilyEnum;
 import com.csc.vim.framework.properties.Parameters;
 
@@ -43,20 +44,7 @@ public class BusinessService {
 			}
 		}
 		
-		//Creating MM ou FI SAP Invoice
-		if(pInvoice.getPurchaseOrder()!= null)
-		{
-			if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
-			else
-			{
-				if (pInvoice.getInvoiceLines()!= null)
-					pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
-			}
-		}
-		
-		//Updating DCTM Invoice
-		pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+		pInvoice = createInvoiceIntoSAP(pInvoice);
 		//TODO
 		//Link SAP Document with Documentum object
 		//invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
@@ -73,23 +61,20 @@ public class BusinessService {
 		return null;
 	}
 	
-	public void createInvoiceIntoSAP(Invoice pInvoice){
+	public Invoice createInvoiceIntoSAP(Invoice pInvoice){
 		//The invoice is booked during the creation 
 		if (pInvoice.getrObjectId()!= null)
 		{
 			invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
-			//TODO
-			// test sur l'invoice family pour  verifié que la facture et avec ou sans PO
-			if (null != pInvoice.getPurchaseOrder() ) 
-				if ( null != pInvoice.getPurchaseOrder().getPoNumber() )
+			if ((pInvoice.getInvoiceFamily() == InvoiceCategoryEnum.WhitPoGR.getCategoryId()) || (pInvoice.getInvoiceFamily() == InvoiceCategoryEnum.WhitPO_GR.getCategoryId()) )
 					pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
-				else
-				{
-					if (pInvoice.getInvoiceLines()!= null)
-						pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
-				}
-			invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+			else
+			{
+				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+			}
+			return invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
 		}
+		return null;
 	}
 	
 	
@@ -105,17 +90,12 @@ public class BusinessService {
 				pInvoice = invoiceSapServiceInstance.retrieveDataFromSAP(pInvoice);
 			// Verifying the invoice family
 			if (pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.ManualFiCoInput.getCategoryId() || pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.TradingCoating.getCategoryId())
-				//TODO
-			if (null != pInvoice.getPurchaseOrder().getPoNumber()){
-				//Creating SAP MM Invoice 
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
-				
+			{
+				if (pInvoice.getBlockingCodeT() == "F"){
+					pInvoice.setBlockingCodeT("T");
+				}
 			}
-			else{ 
-				//Creating SAP FI Invoice 
-				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
-			}
-			return invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+			return createInvoiceIntoSAP(pInvoice);
 	}
 	
 	//Creation and booking of the invoices in status 6
@@ -127,35 +107,35 @@ public class BusinessService {
 	}
 	
 	//Create invoice with status 6 in SAP
-		public Invoice createStatusSixInvoices(Invoice pInvoice){
-			// Get Invoice Data from Documentum
-			pInvoice  = invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
-			
-			// Check Blocking code
-			if (pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.TradingCoating.getCategoryId() || pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.ManualFiCoInput.getCategoryId())
-			{
-				if (pInvoice.getBlockingCodeT() == "F"){
-					pInvoice.setBlockingCodeT("T");
-				}
+	public Invoice createStatusSixInvoices(Invoice pInvoice){
+		// Get Invoice Data from Documentum
+		pInvoice  = invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
+		
+		// Check Blocking code
+		if (pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.TradingCoating.getCategoryId() || pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.ManualFiCoInput.getCategoryId())
+		{
+			if (pInvoice.getBlockingCodeT() == "F"){
+				pInvoice.setBlockingCodeT("T");
 			}
-			
-			//Creating MM ou FI SAP Invoice
-			if(pInvoice.getPurchaseOrder()!= null)
-			{
-				if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
-					pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
-				else
-					pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
-			}
-			
-			//Updating DCTM Invoice
-			pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
-			//TODO
-			//Link SAP Document with Documentum object
-			//invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
-			
-			return pInvoice;
 		}
+		
+		//Creating MM ou FI SAP Invoice
+		if(pInvoice.getPurchaseOrder()!= null)
+		{
+			if (pInvoice.getPurchaseOrder().getPoNumber()!=null)
+				pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
+			else
+				pInvoice = invoiceSapServiceInstance.createInvoiceWithoutPO(pInvoice);
+		}
+		
+		//Updating DCTM Invoice
+		pInvoice = invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
+		//TODO
+		//Link SAP Document with Documentum object
+		//invoiceSapServiceInstance.linkDocumentToSAP(pInvoice);
+		
+		return pInvoice;
+	}
 		
 	//Synchronise the status 7 invoices from SAP
 	public void synchroniseStatusSevenInvoices(){
@@ -167,11 +147,11 @@ public class BusinessService {
 	}
 	
 	//Synchronise the status 8 invoices from SAP
-		public void synchroniseStatusEightInvoices(){
-			List<Invoice> listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_EIGHT()));
-			for (Invoice invoiceInstance : listOfInvoices) {
-				invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
-				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
-			}
+	public void synchroniseStatusEightInvoices(){
+		List<Invoice> listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_EIGHT()));
+		for (Invoice invoiceInstance : listOfInvoices) {
+			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
+			invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
 		}
+	}
 }

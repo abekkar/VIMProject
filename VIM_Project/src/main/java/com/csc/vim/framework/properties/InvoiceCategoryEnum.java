@@ -1,4 +1,4 @@
-package com.csc.vim.framework.util;
+package com.csc.vim.framework.properties;
 
 public enum InvoiceCategoryEnum {
 

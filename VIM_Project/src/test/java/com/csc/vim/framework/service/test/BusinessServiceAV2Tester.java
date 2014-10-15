@@ -1,4 +1,4 @@
-package com.csc.vim.framework.VIMProject.dao;
+package com.csc.vim.framework.service.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -10,7 +10,7 @@ public interface IBusinessService {
 	
 	public Invoice retrievingSapInformations(Invoice pInvoice);
 	
-	public void createInvoiceIntoSAP(Invoice pInvoice);
+	public Invoice createInvoiceIntoSAP(Invoice pInvoice);
 	
 	
 	public void linkInvoiceDctmSap(Invoice pInvoice);

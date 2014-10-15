@@ -48,7 +48,15 @@ public interface IInvoiceDctmDao {
 	 */
 	public Invoice retrieveInvoice(Invoice pInvoice) throws Exception;
 	
-	
+	/**
+	 * Get the list of the invoice 
+	 * 
+	 * @author abekkar	
+	 * @param status of the invoice
+	 * @since 1.0
+	 * @return List<Invoice> 		The list of invoices having the same status as in the input
+	 * @throws Exception
+	 */
 	public List<Invoice> getInvoicesByStatut(Integer status) throws DfIdentityException, DfAuthenticationException,DfPrincipalException, DfServiceException, DfException,JCoException, IOException ;
 	
 	

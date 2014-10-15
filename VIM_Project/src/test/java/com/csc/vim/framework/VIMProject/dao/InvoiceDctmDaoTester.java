@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.csc.vim.framework.dao.impl.InvoiceDctmDao;
 import com.csc.vim.framework.model.Invoice;
+import com.csc.vim.framework.model.PurchaseOrder;
 import com.sap.conn.jco.JCoException;
 
 
@@ -43,9 +44,9 @@ public class InvoiceDctmDaoTester {
 		Invoice invoiceTester= new Invoice();
 		invoiceTester.setrObjectId("090d8b6680005edf");
 		invoiceTester.setBlockingCodeT("T");
-		//PurchaseOrder purchaseOrderTester = new PurchaseOrder();
-		//purchaseOrderTester.setPoNumber("0073400030");
-		//invoiceTester.setPurchaseOrder(purchaseOrderTester);
+		PurchaseOrder purchaseOrderTester = new PurchaseOrder();
+		purchaseOrderTester.setPoNumber("0073400030");
+		invoiceTester.setPurchaseOrder(purchaseOrderTester);
 		try {
 			invoiceDctmDaoTester.update(invoiceTester);
 		} catch (Exception e) {

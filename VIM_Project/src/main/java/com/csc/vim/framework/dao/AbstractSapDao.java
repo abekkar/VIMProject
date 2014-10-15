@@ -45,7 +45,7 @@ public abstract class AbstractSapDao extends GenericDao {
 	/**
 	 * Initiate a connection with SAP. The connection object is stored into the class variable: destination
 	 * 
-	 * @author kaoutar
+	 * @author ABekkar
 	 * @throws IOException
 	 * @since 1.0
 	 * @throws Exception
@@ -54,7 +54,7 @@ public abstract class AbstractSapDao extends GenericDao {
 
 	/**
 	 * 
-	 * @author kaoutar
+	 * @author ABekkar
 	 * @since 1.0
 	 * @param destinationName
 	 * @param connectProperties
@@ -78,7 +78,7 @@ public abstract class AbstractSapDao extends GenericDao {
 	
 	/**
 	 * Extract message from the Return table of a BAPI
-	 * @author syong
+	 * @author ABekkar
 	 * @since 1.0
 	 * @param pResultable Return table of a BAPI
 	 * @return List<String> Message Content of the pResultTable
