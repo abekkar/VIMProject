@@ -399,7 +399,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// ==============================================================================================
 		// ======================================== 1/ SET INUPUT =======================================
 		// ==============================================================================================
-		function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
+		//function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
 
 		// *********************************
 		// *** Structure DOCUMENTHEADER ****
@@ -686,6 +686,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.getListOfBankDetails().clear();
 				BankDetails bankInstance = new BankDetails();
 				bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
+				//TODO
 				bankInstance.setAccountName("");
 				bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
 				invoiceInstance.getListOfBankDetails().add(bankInstance);

@@ -15,7 +15,6 @@ import com.documentum.fc.client.DfIdentityException;
 import com.documentum.fc.client.DfPrincipalException;
 import com.documentum.fc.client.DfServiceException;
 import com.documentum.fc.common.DfException;
-import com.sap.conn.jco.JCoException;
 
 @Component
 public class InvoiceDCTMService {
@@ -23,43 +22,16 @@ public class InvoiceDCTMService {
 	@Autowired
 	InvoiceDctmDao invoiceDctmDaoInstance;
 	protected final Logger logger = LoggerFactory.getLogger(InvoiceDCTMService.class);	
-	public Invoice readInvoiceFromDctm(Invoice pInvoice){
-		try {
+	public Invoice readInvoiceFromDctm(Invoice pInvoice) throws DfException, IOException,DfIdentityException,DfAuthenticationException,DfServiceException,DfPrincipalException,Exception {
 			return invoiceDctmDaoInstance.retrieveInvoice(pInvoice);
-		} catch (Exception e) {
-			logger.error(e.getMessage()); 
-		}
-		return null;
 	}
 	
-	public Invoice updateDctmInvoice(Invoice pInvoice){
-		try {
+	public Invoice updateDctmInvoice(Invoice pInvoice) throws Exception{
 			return invoiceDctmDaoInstance.update(pInvoice);
-		} catch (Exception e) {
-			logger.error(e.getMessage()); 
-		}
-		return null;
 	}
 	
-	public List<Invoice> retrieveInvoicesByStatus(Integer status){
-		try {
+	public List<Invoice> retrieveInvoicesByStatus(Integer status) throws Exception{
 			return invoiceDctmDaoInstance.getInvoicesByStatut(status);
-		} catch (DfIdentityException e) {
-			logger.error(e.getMessage()); 
-		} catch (DfAuthenticationException e) {
-			logger.error(e.getMessage()); 
-		} catch (DfPrincipalException e) {
-			logger.error(e.getMessage()); 
-		} catch (DfServiceException e) {
-			logger.error(e.getMessage()); 
-		} catch (DfException e) {
-			logger.error(e.getMessage()); 
-		} catch (JCoException e) {
-			logger.error(e.getMessage()); 
-		} catch (IOException e) {
-			logger.error(e.getMessage()); 
-		}
-		return null;
 	}
 	
 }

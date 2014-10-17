@@ -1,5 +1,7 @@
 package com.csc.vim.framework.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.csc.vim.framework.model.ExceptionWrapper;
 import com.csc.vim.framework.model.Invoice;
-import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.properties.RestURIConstants;
 import com.csc.vim.framework.service.impl.BusinessService;
 
@@ -23,7 +25,7 @@ public class InvoiceController {
 	 * AV2 Process
 	 */
 	@RequestMapping(value = RestURIConstants.PROCESS_AV2, method = RequestMethod.GET)
-	public Invoice processAV2(@RequestParam String r_object_id){
+	public List<ExceptionWrapper> processAV2(@RequestParam String r_object_id){
 		Invoice pInvoice = new Invoice();
 		pInvoice.setrObjectId(r_object_id);
 		return businessServiceInstance.processAV2(pInvoice);
@@ -35,7 +37,7 @@ public class InvoiceController {
 	@RequestMapping(value = RestURIConstants.RETRIEVE_SAP, method = RequestMethod.GET)
 	public void retrieveDataFromSAP(@RequestParam String r_object_id){
 		Invoice pInvoice = new Invoice();
-		pInvoice = businessServiceInstance.getInformationsFromDCTM(r_object_id);
+		pInvoice.setrObjectId(r_object_id);
 		businessServiceInstance.retrievingSapInformations(pInvoice);
 	}
 	
@@ -45,7 +47,7 @@ public class InvoiceController {
 	@RequestMapping(value=RestURIConstants.CREATE_INVOICE, method = RequestMethod.GET)
 	public @ResponseBody void CreateInvoice(@RequestParam String r_object_id) {
 		Invoice pInvoice = new Invoice();
-		pInvoice = businessServiceInstance.getInformationsFromDCTM(r_object_id);
+		pInvoice.setrObjectId(r_object_id);
 		businessServiceInstance.createInvoiceIntoSAP(pInvoice);
 	}
 	
@@ -53,9 +55,9 @@ public class InvoiceController {
 	 * Link DCTM Invoice into SAP
 	 */
 	@RequestMapping(value=RestURIConstants.LINK_INVOICE, method = RequestMethod.GET)
-	public @ResponseBody void synchroniseStatusSevenInvoices(@RequestParam String r_object_id) {
+	public @ResponseBody void LinkInvoice(@RequestParam String r_object_id) {
 		Invoice pInvoice = new Invoice();
-		pInvoice = businessServiceInstance.getInformationsFromDCTM(r_object_id);
+		pInvoice.setrObjectId(r_object_id);
 		businessServiceInstance.linkInvoiceDctmSap(pInvoice);
 	}
 	

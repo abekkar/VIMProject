@@ -9,7 +9,7 @@ public class RestURIConstants {
     /*
 	 * URL TO  get invoice informations from SAP
 	 */
-    public static final String RETRIEVE_SAP             = "/V1/SINV21";
+    public static final String RETRIEVE_SAP             = "/V1/SINV22";
     /*
 	 * URL TO  create invoice SAP
 	 */

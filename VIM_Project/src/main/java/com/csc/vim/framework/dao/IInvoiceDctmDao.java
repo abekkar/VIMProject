@@ -4,14 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.csc.vim.framework.model.Invoice;
-import com.documentum.fc.client.DfAuthenticationException;
-import com.documentum.fc.client.DfIdentityException;
-import com.documentum.fc.client.DfPrincipalException;
-import com.documentum.fc.client.DfServiceException;
 import com.documentum.fc.client.IDfQuery;
 import com.documentum.fc.client.IDfSession;
 import com.documentum.fc.common.DfException;
-import com.sap.conn.jco.JCoException;
 
 public interface IInvoiceDctmDao {
 
@@ -24,7 +19,7 @@ public interface IInvoiceDctmDao {
 	 * @throws 	IOException
 	 * @throws 	Exception
 	 */
-	public Invoice read(Invoice pInvoice) throws  Exception;
+	public Invoice read(Invoice pInvoice) throws  DfException, Exception;
 
 
 	/**
@@ -57,26 +52,26 @@ public interface IInvoiceDctmDao {
 	 * @return List<Invoice> 		The list of invoices having the same status as in the input
 	 * @throws Exception
 	 */
-	public List<Invoice> getInvoicesByStatut(Integer status) throws DfIdentityException, DfAuthenticationException,DfPrincipalException, DfServiceException, DfException,JCoException, IOException ;
+	public List<Invoice> getInvoicesByStatut(Integer status) throws Exception ;
 	
 	
-	public Invoice populateInvoiceProperties(Invoice pInvoice,IDfSession session);
+	public Invoice populateInvoiceProperties(Invoice pInvoice,IDfSession session) throws  DfException;
 	
-	public Invoice populateInvoiceLines(Invoice pInvoice,IDfSession session);
+	public Invoice populateInvoiceLines(Invoice pInvoice,IDfSession session) throws  DfException;
 	
-	public Invoice populateBankInformations(Invoice pInvoice, IDfSession session);
+	public Invoice populateBankInformations(Invoice pInvoice, IDfSession session) throws  DfException;
 	
-	public Invoice populateApprovers(Invoice pInvoice, IDfSession session);
+	public Invoice populateApprovers(Invoice pInvoice, IDfSession session) throws  DfException;
 	
-	public Invoice populateprocessors(Invoice pInvoice, IDfSession session);
+	public Invoice populateprocessors(Invoice pInvoice, IDfSession session) throws  DfException;
 	
-	public IDfQuery updateInvoiceProperties(Invoice pInvoice,IDfQuery DQLquery);
+	public IDfQuery updateInvoiceProperties(Invoice pInvoice,IDfQuery DQLquery) throws  DfException;
 	
-	public IDfQuery updateSupplierDetail(Invoice pInvoice, IDfQuery DQLquery,IDfSession session);
+	public IDfQuery updateSupplierDetail(Invoice pInvoice, IDfQuery DQLquery,IDfSession session) throws  DfException;
 	
-	public IDfQuery updatePurchaseOrder(Invoice pInvoice,IDfQuery DQLquery,IDfSession session);
+	public IDfQuery updatePurchaseOrder(Invoice pInvoice,IDfQuery DQLquery,IDfSession session) throws  DfException;
 	
-	public IDfQuery updateApprovers(Invoice pInvoice,IDfQuery DQLquery,IDfSession session);
+	public IDfQuery updateApprovers(Invoice pInvoice,IDfQuery DQLquery,IDfSession session) throws  DfException;
 	
-	public IDfQuery updateProcessors(Invoice pInvoice,IDfQuery DQLquery,IDfSession session);
+	public IDfQuery updateProcessors(Invoice pInvoice,IDfQuery DQLquery,IDfSession session) throws  DfException;
 }

@@ -62,3 +62,69 @@ COUNTER     2
     error group: 102
     key: RFC_ERROR_COMMUNICATION
 
+
+**** Error file opened at 20141017 115555 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 11:55:55,339<    RfcException: [null]
+    message: Connect to SAP gateway failed
+Connection parameters: TYPE=A DEST=ABAP_AS_WITH_POOL ASHOST=CTSR05 SYSNR=03 PCS=1
+
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       hostname 'CTSR05' unknown
+TIME        Fri Oct 17 11:55:55 2014
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -2
+MODULE      ninti.c
+LINE        895
+DETAIL      NiPGetHostByName: 'CTSR05' not found
+SYSTEM CALL getaddrinfo
+COUNTER     2
+
+    Return code: RFC_FAILURE(1)
+    error group: 102
+    key: RFC_ERROR_COMMUNICATION
+
+
+**** Error file opened at 20141017 151140 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 15:11:40,244<    RfcException: [null]
+    message: Connect to SAP gateway failed
+Connection parameters: TYPE=A DEST=ABAP_AS_WITH_POOL ASHOST=CTSR05 SYSNR=03 PCS=1
+
+LOCATION    CPIC (TCP/IP) on local host with Unicode
+ERROR       hostname 'CTSR05' unknown
+TIME        Fri Oct 17 15:11:40 2014
+RELEASE     720
+COMPONENT   NI (network interface)
+VERSION     40
+RC          -2
+MODULE      ninti.c
+LINE        895
+DETAIL      NiPGetHostByName: 'CTSR05' not found
+SYSTEM CALL getaddrinfo
+COUNTER     2
+
+    Return code: RFC_FAILURE(1)
+    error group: 102
+    key: RFC_ERROR_COMMUNICATION
+
+
+**** Error file opened at 20141017 151309 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 15:13:09,890<    >RfcGetException rc (7) message: Exception condition "NO_PARAMETER" raised.
+<RfcGetException
+
+
+**** Error file opened at 20141017 151701 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 15:17:01,805<    >RfcGetException rc (7) message: Exception condition "NO_PARAMETER" raised.
+<RfcGetException
+
+
+**** Error file opened at 20141017 151846 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 15:18:46,392<    >RfcGetException rc (7) message: Exception condition "NO_PARAMETER" raised.
+<RfcGetException
+
+
+**** Error file opened at 20141017 152025 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Fri Oct 17 15:20:25,801<    >RfcGetException rc (7) message: Exception condition "NO_PARAMETER" raised.
+<RfcGetException
+
