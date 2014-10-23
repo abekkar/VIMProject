@@ -182,7 +182,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		pInvoice = populatePurchaseOrder(pInvoice,  session);
 		pInvoice = populateApprovers(pInvoice, session);
 		pInvoice = populateprocessors(pInvoice, session);
-		//dctmInstance.closeSession(session);
+		dctmInstance.closeSession(session);
 		return pInvoice;
 	}
 
@@ -197,6 +197,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
 			DQLquery = updateBankInformations(pInvoice, DQLquery, session);
 			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+			dctmInstance.closeSession(session);
 		return pInvoice;
 	}
 
