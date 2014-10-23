@@ -210,8 +210,9 @@ public class InvoiceSapDao extends AbstractSapDao {
 			// ==============================================================================================
 			if (pInvoice.getInvoiceCategory()== 1 || pInvoice.getInvoiceCategory()== 0)
 				function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
-			if (pInvoice.getSapBlockingCode()!= null)
-				function.getImportParameterList().setValue("PBLOCK", pInvoice.getSapBlockingCode());
+			//TODO
+//			if (pInvoice.getSapBlockingCode()!= null)
+//				function.getImportParameterList().setValue("PBLOCK", pInvoice.getSapBlockingCode());
 			// *****************************
 			// *** Structure HEADERDATA ****
 			// *****************************
@@ -412,12 +413,15 @@ public class InvoiceSapDao extends AbstractSapDao {
 		strucDocumentHeader.setValue("USERNAME", pInvoice.getSapInvoiceCreator());
 		strucDocumentHeader.setValue("HEADER_TXT", pInvoice.getScanningReference());
 		strucDocumentHeader.setValue("COMP_CODE", COMPANY_CODE );
-		//TODO
-		//format date to dd.mm.yyyy
-		strucDocumentHeader.setValue("DOC_DATE", pInvoice.getInvoiceDate());
-		strucDocumentHeader.setValue("PSTNG_DATE", pInvoice.getScanningDate());
-		strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDate(pInvoice.getScanningDate(), "dd.mm.yyyyy")));
-		strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDate(pInvoice.getScanningDate(), "dd.mm.yyyyy")) );
+		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null )
+			//TODO
+			//format date to dd.mm.yyyy
+			strucDocumentHeader.setValue("DOC_DATE", pInvoice.getInvoiceDate());
+		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null ){
+			strucDocumentHeader.setValue("PSTNG_DATE", pInvoice.getScanningDate());
+			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDate(pInvoice.getScanningDate(), "yyyy")));
+			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDate(pInvoice.getScanningDate(), "mm")) );
+		}
 		//TODO
 		//Bloc if for invoice or credit note
 		//if ( pInvoice.getInvoiceType() == "0" || pInvoice.getInvoiceType() == "1")
@@ -567,10 +571,10 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// *************************************
 		try
 		{
-			if (null != pInvoice.getPurchaseOrder() ) {
+			if (null != pInvoice.getPurchaseOrder() && null != pInvoice.getPurchaseOrder().getPoNumber()  && !"".equalsIgnoreCase(pInvoice.getPurchaseOrder().getPoNumber())) {
 				function.getImportParameterList().setValue("PURCHASEORDER", pInvoice.getPurchaseOrder().getPoNumber());
 			}
-			if (pInvoice.getPurchaseOrder()!= null) {
+			if (pInvoice.getPurchaseOrder()!= null && pInvoice.getPurchaseOrder().getPoNumberPosition()!= null && !"".equalsIgnoreCase(pInvoice.getPurchaseOrder().getPoNumberPosition())) {
 				function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
 			}
 			if (null !=pInvoice.getSupplierDetail()){
@@ -645,8 +649,9 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// **************************
 		try
 		{
-			if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
-				invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
+			//TODO
+//			if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
+//				invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
 			if (null != function.getExportParameterList().getString(INVOICE_CATEGORY))
 				invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
 			invoiceInstance.setCompanyCode(COMPANY_CODE);

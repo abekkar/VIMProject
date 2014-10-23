@@ -71,6 +71,7 @@ public class BusinessService {
 		invoiceSapServiceInstance.retrieveDataFromSAP(pInvoice);
 
 		// Check Blocking code
+		pInvoice.setBlockingCodeV("T");
 		if (pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.TradingCoating.getCategoryId() || pInvoice.getInvoiceFamily() == InvoiceFamilyEnum.ManualFiCoInput.getCategoryId())
 		{
 			if (pInvoice.getBlockingCodeT() == "F"){

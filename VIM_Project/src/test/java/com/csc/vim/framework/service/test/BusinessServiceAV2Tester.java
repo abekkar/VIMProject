@@ -3,6 +3,7 @@ package com.csc.vim.framework.service.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.csc.vim.framework.model.ExceptionWrapper;
 import com.csc.vim.framework.model.Invoice;
+import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.service.impl.BusinessService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -18,14 +20,34 @@ import com.csc.vim.framework.service.impl.BusinessService;
 @SuppressWarnings("unused")
 public class BusinessServiceAV2Tester {
 	private static final String r_object_id = "090d8b66800135cd";
+	private static final String poNumber = "40001003";
 	@Autowired
 	BusinessService businessServiceInstance;
-	
+	/*
+	 * Test passant document existant sur Documentum
+	 * Integration de la facture dans sap en MM et comptablisitation effectuée
+	 */
 	@Test
-	public void testProcessAV2(){
+	public void testProcessAV2MM(){
+		Invoice invoiceInstance = new Invoice();
+		invoiceInstance.setrObjectId("090d8b668001859c");
+		invoiceInstance.setInvoiceFamily(1);
+		invoiceInstance.setPurchaseOrder(new PurchaseOrder());
+		invoiceInstance.getPurchaseOrder().setPoNumber(poNumber);
+		businessServiceInstance.processAV2(invoiceInstance);
+		Assert.assertNotNull(invoiceInstance.getSapMMDocumentNumber());
+	}
+	
+	/*
+	 * Test passant document existant sur Documentum
+	 * Integration de la facture dans sap en MM et comptablisitation effectuée
+	 */
+	@Test
+	public void testProcessAV2FI(){
 		Invoice invoiceInstance = new Invoice();
 		invoiceInstance.setrObjectId(r_object_id);
 		businessServiceInstance.processAV2(invoiceInstance);
+		Assert.assertNotNull(invoiceInstance.getSapFIDocumentNumber());
 	}
 	
 	@Test
