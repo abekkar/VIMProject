@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.hibernate.annotations.Synchronize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import scala.unchecked;
 
 import com.csc.vim.framework.dao.IInvoiceDctmDao;
 import com.csc.vim.framework.model.BankDetails;
@@ -60,6 +57,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String MESSAGE_OBJECT = "message";
 	private static final String MESSAGE_RELATION = "invoice_message_dct ";
 	private static final String NAMESPACE = "demat";
+	private static final String NAMESPACE_INVOICE = "vim";
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_"+PURCHASEORDER_OBJECT+" p,"+NAMESPACE+"_"+PURCHASEORDER_RELATION+" r where r.child_id = p.r_object_id and r.parent_id='";
 	private static final String DQL_QUERY_RETRIEVE_APPROVER = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where  r.child_id = p.r_object_id and p.message_code='AVWA' and r.parent_id='";
 	private static final String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where   r.child_id = p.r_object_id and p.message_code<>'AVWA' and r.parent_id='";
@@ -67,7 +65,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_"+SUPPLIER_OBJECT+" p,"+NAMESPACE+"_"+SUPPLIER_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
 	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_"+BANKINFORMATIONS_OBJECT+" p,"+NAMESPACE+"_"+BANKINFORMATIONS_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
 	
-	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE+"_"+INVOICE_OBJECT+" where invoice_status='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE_INVOICE+"_"+INVOICE_OBJECT+" where invoice_status='";
 
 	/*
 	 *  Invoice Properties
@@ -215,6 +213,15 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			dctmInstance.closeSession(session);
 		return pInvoice;
 	}
+	
+	public Invoice updateInvoiceProperties(Invoice pInvoice)  throws Exception  {
+		IDfQuery DQLquery = new DfQuery();
+		IDfSession session = dctmInstance.getSession();
+		DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
+		dctmInstance.closeSession(session);
+	return pInvoice;
+}
+	
 
 	public List<Invoice> getInvoicesByStatut(Integer status) throws Exception {
 		IDfQuery queryGetInvoiceByStatus = new DfQuery();

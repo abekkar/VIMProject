@@ -298,7 +298,7 @@ public class BusinessService {
 		for (Invoice invoiceInstance : listOfInvoices) {
 			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
 			try {
-				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
+				invoiceDCTMServiceInstance.updateDctmInvoiceProperties(invoiceInstance);
 				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();

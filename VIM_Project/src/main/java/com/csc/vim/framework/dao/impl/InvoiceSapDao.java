@@ -219,7 +219,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure("HEADERDATA");
 			// Document date
 			if (null != pInvoice.getInvoiceDate())
-				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
+				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
 			strucHeaderData.setValue("DOC_TYPE", DOC_TYPE);
 			// Invoice Reference
 			strucHeaderData.setValue("REF_DOC_NO", pInvoice.getInvoiceReference());
@@ -233,9 +233,9 @@ public class InvoiceSapDao extends AbstractSapDao {
 			//Invoice Currency
 			strucHeaderData.setValue("CURRENCY", pInvoice.getInvoiceCurrency());
 			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
-				strucHeaderData.setValue("BLINE_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"dd.mm.yyyy"));
+				strucHeaderData.setValue("BLINE_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"DD.MM.YYYY"));
 				//Recuperation de la date du document
-				strucHeaderData.setValue("PSTNG_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"dd.mm.yyyy") );
+				strucHeaderData.setValue("PSTNG_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"DD.MM.YYYY") );
 			}
 				
 			
@@ -409,11 +409,11 @@ public class InvoiceSapDao extends AbstractSapDao {
 		strucDocumentHeader.setValue("HEADER_TXT", pInvoice.getScanningReference());
 		strucDocumentHeader.setValue("COMP_CODE", COMPANY_CODE );
 		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null )
-			strucDocumentHeader.setValue("DOC_DATE",dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
-		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null ){
-			strucDocumentHeader.setValue("PSTNG_DATE", pInvoice.getScanningDate());
-			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "dd.mm.yyyy")));
-			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "dd.mm.yyyy")) );
+			strucDocumentHeader.setValue("DOC_DATE",dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
+		if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
+			strucDocumentHeader.setValue("PSTNG_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
+			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")) );
 		}
 		//TODO
 		//Bloc if for invoice or credit note

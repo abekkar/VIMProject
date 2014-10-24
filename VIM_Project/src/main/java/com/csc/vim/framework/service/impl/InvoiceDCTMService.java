@@ -21,7 +21,8 @@ public class InvoiceDCTMService {
 
 	@Autowired
 	InvoiceDctmDao invoiceDctmDaoInstance;
-	protected final Logger logger = LoggerFactory.getLogger(InvoiceDCTMService.class);	
+	protected final Logger logger = LoggerFactory.getLogger(InvoiceDCTMService.class);
+	
 	public Invoice readInvoiceFromDctm(Invoice pInvoice) throws DfException, IOException,DfIdentityException,DfAuthenticationException,DfServiceException,DfPrincipalException,Exception {
 			return invoiceDctmDaoInstance.retrieveInvoice(pInvoice);
 	}
@@ -29,6 +30,10 @@ public class InvoiceDCTMService {
 	public Invoice updateDctmInvoice(Invoice pInvoice) throws Exception{
 			return invoiceDctmDaoInstance.update(pInvoice);
 	}
+	
+	public Invoice updateDctmInvoiceProperties(Invoice pInvoice) throws Exception{
+		return invoiceDctmDaoInstance.updateInvoiceProperties(pInvoice);
+}
 	
 	public List<Invoice> retrieveInvoicesByStatus(Integer status) throws Exception{
 			return invoiceDctmDaoInstance.getInvoicesByStatut(status);

@@ -47,8 +47,8 @@ public class DateUtils {
 				sDate = sDate.substring(0, 10).replace("/", ".");
 				//TODO Gerer l'exception
 				try {
-					 dateForm = new SimpleDateFormat(sFormat).parse(sDate);
-					 
+					SimpleDateFormat formatter = new SimpleDateFormat(sFormat);
+					dateForm = formatter.parse(sDate);
 				} catch (ParseException e) {
 					e.printStackTrace();
 
