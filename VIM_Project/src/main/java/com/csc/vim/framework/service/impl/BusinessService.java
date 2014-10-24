@@ -56,10 +56,10 @@ public class BusinessService {
 		// Get Invoice Data from Documentum
 		try {
 			invoiceDCTMServiceInstance.readInvoiceFromDctm(pInvoice);
-			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_CODE + ErrorConstants.SUCCESS_DCTM_RETRIEVING_MESSAGE);
+			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_CODE +": "+ ErrorConstants.SUCCESS_DCTM_RETRIEVING_MESSAGE);
 		} catch (Exception e) {
 			ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE + e.getMessage());
+			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE +": "+ e.getMessage());
 			e.printStackTrace();
 			exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE);
 			exceptionInstance.setMessageCode(e.getMessage());
@@ -78,7 +78,11 @@ public class BusinessService {
 				pInvoice.setBlockingCodeT("T");
 			}
 		}
-		
+		//TODO 
+		//delete 3 test lines 
+		pInvoice.setScanningDate("29/12/2013 00:00:00");
+		pInvoice.setInvoiceCurrency("EUR");
+		pInvoice.setInvoiceDate("29/12/2013 00:00:00");
 		createInvoiceIntoSAP(pInvoice);
 		//TODO
 		//Link SAP Document with Documentum object
@@ -100,10 +104,10 @@ public class BusinessService {
 			}
 			try {
 				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceSapServiceInstance.retrieveDataFromSAP(pInvoice));
-				logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_CODE + ErrorConstants.SUCCESS_DCTM_RETRIEVING_MESSAGE);
+				logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_CODE +": "+ ErrorConstants.SUCCESS_DCTM_RETRIEVING_MESSAGE);
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-				logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE + e.getMessage());
+				logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE +": "+ e.getMessage());
 				e.printStackTrace();
 				exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_CODE);
 				exceptionInstance.setMessageCode(e.getMessage());
@@ -127,10 +131,10 @@ public class BusinessService {
 			}
 			try {
 				invoiceDCTMServiceInstance.updateDctmInvoice(pInvoice);
-				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE + ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
+				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE + e.getMessage());
+				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE +": "+ e.getMessage());
 				e.printStackTrace();
 				exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_UPDATING_CODE);
 				exceptionInstance.setMessageCode(e.getMessage());
@@ -164,7 +168,7 @@ public class BusinessService {
 				e.printStackTrace();
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-				logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE + e.getMessage());
+				logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE +": "+ e.getMessage());
 				e.printStackTrace();
 				exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE);
 				exceptionInstance.setMessageCode(e.getMessage());
@@ -183,12 +187,12 @@ public class BusinessService {
 		List<ExceptionWrapper> errorListInstance = new ArrayList<ExceptionWrapper>();
 		try {
 			listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.INV_DCTM_STATUS_SIX));
-			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SIX_CODE + ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SIX_MESSAGE);
+			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SIX_CODE +": "+ ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SIX_MESSAGE);
 		} catch (NumberFormatException e2) {
 			e2.printStackTrace();
 		} catch (Exception e2) {
 			ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE + e2.getMessage());
+			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE +": "+ e2.getMessage());
 			e2.printStackTrace();
 			exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SIX_CODE);
 			exceptionInstance.setMessageCode(e2.getMessage());
@@ -220,10 +224,10 @@ public class BusinessService {
 				//Updating DCTM Invoice
 				try {
 					invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
-					logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE + ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
+					logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 				} catch (Exception e) {
 					ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-					logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE + e.getMessage());
+					logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE +": "+ e.getMessage());
 					e.printStackTrace();
 					exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_UPDATING_CODE);
 					exceptionInstance.setMessageCode(e.getMessage());
@@ -243,12 +247,12 @@ public class BusinessService {
 		List<ExceptionWrapper> errorListInstance = new ArrayList<ExceptionWrapper>();
 		try {
 			listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_SEVEN()));
-			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SEVEN_CODE + ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SEVEN_MESSAGE);
+			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SEVEN_CODE +": "+ ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_SEVEN_MESSAGE);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SEVEN_CODE + e.getMessage());
+			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SEVEN_CODE +": "+ e.getMessage());
 			exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_SEVEN_CODE);
 			e.printStackTrace();
 			exceptionInstance.setMessageCode(e.getMessage());
@@ -259,10 +263,10 @@ public class BusinessService {
 			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
 			try {
 				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
-				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE + ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
+				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE + e.getMessage());
+				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE +": "+ e.getMessage());
 				e.printStackTrace();
 				exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_UPDATING_CODE);
 				exceptionInstance.setMessageCode(e.getMessage());
@@ -279,12 +283,12 @@ public class BusinessService {
 		List<ExceptionWrapper> errorListInstance = new ArrayList<ExceptionWrapper>();
 		try {
 			listOfInvoices = invoiceDCTMServiceInstance.retrieveInvoicesByStatus(Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_EIGHT()));
-			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_EIGHT_CODE + ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_EIGHT_MESSAGE);
+			logger.debug(ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_EIGHT_CODE +": "+ ErrorConstants.SUCCESS_DCTM_RETRIEVING_BY_STATUS_EIGHT_MESSAGE);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_EIGHT_CODE + e.getMessage());
+			logger.error(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_EIGHT_CODE +": "+ e.getMessage());
 			e.printStackTrace();
 			exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_RETRIEVING_BY_STATUS_EIGHT_CODE);
 			exceptionInstance.setMessageCode(e.getMessage());
@@ -295,10 +299,10 @@ public class BusinessService {
 			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
 			try {
 				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
-				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE + ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
+				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 			} catch (Exception e) {
 				ExceptionWrapper exceptionInstance  = new ExceptionWrapper();
-				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE + e.getMessage());
+				logger.error(ErrorConstants.ERROR_DCTM_UPDATING_CODE +": "+ e.getMessage());
 				e.printStackTrace();
 				exceptionInstance.setErrorCode(ErrorConstants.ERROR_DCTM_UPDATING_CODE);
 				exceptionInstance.setMessageCode(e.getMessage());

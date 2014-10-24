@@ -49,7 +49,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_invoice_line,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_supplier,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_purchase_order,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
-	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_invoice_bankinforma,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
+	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_bankinformations,"+NAMESPACE+"_invoice where "+NAMESPACE+"_invoice.r_object_id='";
 	private static final String DQL_QUERY_RETRIEVE_APPROVER = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where "+NAMESPACE+"_message.message_code='AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
 	private static final String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from "+NAMESPACE+"_message,"+NAMESPACE+"_invoice where  "+NAMESPACE+"_message.message_code<>'AVWA' and "+NAMESPACE+"_invoice.r_object_id='";
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE+"_invoice where invoice_status='";
@@ -131,7 +131,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	 */
 	private static final String SUPPLIER_CPD            = "cpd";
 	private static final String SUPPLIER_INDUSTRY       = "industry";
-	private static final String SUPPLIER_ADRESS         = "supplier_address";
+	private static final String SUPPLIER_ADRESS         = "company_address";
 	private static final String SUPPLIER_CITY           = "city";
 	private static final String SUPPLIER_COUNTRY        = "country";
 	private static final String SUPPLIER_EMAIL          = "email";
@@ -153,11 +153,11 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	 * Purchase Order Properties
 	 */
 	private static final String PURCHASE_ORDER_DATE      = "po_date";
-	private static final String PURCHASE_ORDER_DOC_DATE  = "po_document_type";
+	private static final String PURCHASE_ORDER_DOC_TYPE  = "po_document_type";
 	private static final String PURCHASE_ORDER_NUMBER    = "po_number";
 	private static final String PURCHASE_ORDER_NUMBER_POS= "po_number_position";
-	private static final String PO_SUPPLIER_NAME         = "supplier_name";
-	private static final String PO_SUPPLIER_NUMBER       = "supplier_number";
+	private static final String PO_SUPPLIER_NAME         = "po_supplier_name";
+	private static final String PO_SUPPLIER_NUMBER       = "po_supplier_number";
 	
 	/*
 	 * Approvers Properties
@@ -203,21 +203,18 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 
 	public List<Invoice> getInvoicesByStatut(Integer status) throws Exception {
 		IDfQuery queryGetInvoiceByStatus = new DfQuery();
-		IDfQuery DQLquery = new DfQuery();
 		List<Invoice> listOfInvoices = new ArrayList<Invoice>();
 		queryGetInvoiceByStatus.setDQL(DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS	+ status + "'");
 		IDfCollection invoiceCol = queryGetInvoiceByStatus.execute(dctmInstance.getSession(), IDfQuery.DF_READ_QUERY);
 		if (null != invoiceCol) 
 		{
-			for (int i = 0; i < invoiceCol.getAttrCount(); i++) {
+			while (invoiceCol.next()) {
 				Invoice invoiceInstance = new Invoice();
 				invoiceInstance.setrObjectId(invoiceCol.getString(R_OBJECT_ID));
 				listOfInvoices.add(read(invoiceInstance));
 			}
 		}
 		logger.debug("Retrieving Invoices by status: "+ queryGetInvoiceByStatus.toString());
-		DQLquery.setDQL(queryGetInvoiceByStatus.toString());
-		DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);
 		return listOfInvoices;
 	}
 
@@ -400,8 +397,8 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			pInvoice.setPurchaseOrder(new PurchaseOrder());
 			while (invoicePurchaseOrder.next()) {
 				
-				pInvoice.getPurchaseOrder().setPoDocumentType(invoicePurchaseOrder.getString(PURCHASE_ORDER_DOC_DATE));
-				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDate(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),"dd-mm-yyyy"));
+				pInvoice.getPurchaseOrder().setPoDocumentType(invoicePurchaseOrder.getString(PURCHASE_ORDER_DOC_TYPE));
+				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDateDCTM(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),"dd/mm/yyyy"));
 				pInvoice.getPurchaseOrder().setPoNumber(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER));
 				pInvoice.getPurchaseOrder().setPoNumberPosition(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER_POS));
 				pInvoice.getPurchaseOrder().setSupplierName(invoicePurchaseOrder.getString(PO_SUPPLIER_NAME));
@@ -464,10 +461,10 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			invoiceDqlUpdater.append("SET "+GLOBAL_LEVEL_CONTROLLER+" ='"+ pInvoice.getGlobalLevelController() + "' ");
 		invoiceDqlUpdater.append("SET "+SELECTED_APPROVAL_GROUP+" ='"+ pInvoice.getSelectedApprovalGroup() + "' ");
 		if (null !=pInvoice.getInvoiceCurrency() && !pInvoice.getInvoiceCurrency().equalsIgnoreCase(""))
-			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" ="+ pInvoice.getInvoiceCurrency() + " ");
+			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" ='"+ pInvoice.getInvoiceCurrency() + "' ");
 		if (null != pInvoice.getInvoiceDate() )
 			if (!pInvoice.getInvoiceDate().equalsIgnoreCase("nulldate")  )
-				invoiceDqlUpdater.append("SET "+INVOICE_DATE+" ="+ dateUtils.stringToDate(pInvoice.getInvoiceDate(), "dd-mm-yyyy") + " ");
+				invoiceDqlUpdater.append("SET "+INVOICE_DATE+" =date('"+ pInvoice.getInvoiceDate().substring(0, 10) + "','dd/mm/yyyy') ");
 		invoiceDqlUpdater.append("SET "+COMPANY_CODE+" ='"+ pInvoice.getCompanyCode() + "' ");
 		invoiceDqlUpdater.append("SET "+INVOICE_FAMILY+"="+ pInvoice.getInvoiceFamily() + " ");
 		if (null != pInvoice.getInvoiceGrossAmount() )
@@ -510,7 +507,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		invoiceDqlUpdater.append("SET "+SCANNING_REFERENCE+" ='"+ pInvoice.getScanningReference() + "' ");
 		if (null != pInvoice.getScanningDate())
 			if ( !pInvoice.getScanningDate().equalsIgnoreCase("nulldate") )
-				invoiceDqlUpdater.append("SET "+SCANNING_DATE+" ="+ dateUtils.stringToDate(pInvoice.getScanningDate(), "dd-mm-yyyy") + " ");
+				invoiceDqlUpdater.append("SET "+SCANNING_DATE+" =date('"+pInvoice.getScanningDate().substring(0, 10)  + "','dd/mm/yyyy') ");
 		invoiceDqlUpdater.append("SET "+COMPANY_TAX_NUMBER+" ='"+ pInvoice.getCompanyTaxNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+COMPANU_VAT_NUMBER+" ='"+ pInvoice.getCompanyVatNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+SAP_INVOICE_CREATOR+" ='"+ pInvoice.getSapInvoiceCreator() + "' ");
@@ -673,12 +670,13 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		if (null != invoicePODetail) {
 			while (invoicePODetail.next()) {
 				StringBuilder poDetailDqlUpdater = new StringBuilder("UPDATE "+NAMESPACE+"_purchase_order OBJECTS ");
-				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DOC_DATE+" ="+ invoicePODetail.getString(PURCHASE_ORDER_DOC_DATE) + " ");
-				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_NUMBER+" ="+ invoicePODetail.getString(PURCHASE_ORDER_NUMBER) + " ");
-				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_NUMBER_POS+" ="+ invoicePODetail.getString(PURCHASE_ORDER_NUMBER_POS) + " ");
-				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NAME+" ="+ invoicePODetail.getString(PO_SUPPLIER_NAME) + " ");
-				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NUMBER+" ="+ invoicePODetail.getString(PO_SUPPLIER_NUMBER) + " ");
-				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DATE+" ="+ invoicePODetail.getString(PURCHASE_ORDER_DATE) + " ");
+				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DOC_TYPE+" ='"+ invoicePODetail.getString(PURCHASE_ORDER_DOC_TYPE) + "' ");
+				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_NUMBER+" ='"+ invoicePODetail.getString(PURCHASE_ORDER_NUMBER) + "' ");
+				poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_NUMBER_POS+" ='"+ invoicePODetail.getString(PURCHASE_ORDER_NUMBER_POS) + "' ");
+				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NAME+" ='"+ invoicePODetail.getString(PO_SUPPLIER_NAME) + "' ");
+				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NUMBER+" ='"+ invoicePODetail.getString(PO_SUPPLIER_NUMBER) + "' ");
+				if (invoicePODetail.getString(PURCHASE_ORDER_DATE).isEmpty() && invoicePODetail.getString(PURCHASE_ORDER_DATE) != null)
+					poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DATE+" =date('"+ invoicePODetail.getString(PURCHASE_ORDER_DATE).substring(0, 10) + "','dd/mm/yyyy') ");
 				poDetailDqlUpdater.append(" WHERE r_object_id = '"+ invoicePODetail.getString(R_OBJECT_ID) + "' ");
 				logger.debug("Updating Purchase Order Properties: "+ poDetailDqlUpdater.toString());
 				DQLquery.setDQL(poDetailDqlUpdater.toString());			

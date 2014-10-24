@@ -23,13 +23,50 @@ public class DateUtils {
 	}
 
 
-	public Timestamp stringToTimestamp(String pDate, String pFormat) {
-		if ((pDate == null) || (pDate.equals(""))) {
+//	public Timestamp stringToTimestamp(String pDate, String pFormat) {
+//		if ((pDate == null) || (pDate.equals(""))) {
+//			return null;
+//		}
+//		else {
+//			return new Timestamp(stringToDate(pDate, pFormat).getTime());
+//		}
+//	}
+	/**
+	 * Convert a String date to date Object
+	 * @param p_date	date to be transform
+	 * @param p_format	the format input=output of the date
+	 * @return Date		The date object with the right format
+	 */
+	public Date stringToDateSAP(String sDate, String sFormat) {
+		Date dateForm  = null;
+
+		if (sDate.equals("")) {
 			return null;
+		} else {
+			if (!"nulldate".equalsIgnoreCase(sDate)) {
+				sDate = sDate.substring(0, 10).replace("/", ".");
+				//TODO Gerer l'exception
+				try {
+					 dateForm = new SimpleDateFormat(sFormat).parse(sDate);
+					 
+				} catch (ParseException e) {
+					e.printStackTrace();
+
+				}
+			}
 		}
-		else {
-			return new Timestamp(stringToDate(pDate, pFormat).getTime());
+
+		return dateForm;
+	}
+	
+	public static String simpleDateToString(Date p_date, String p_formatOutput) {
+		String result = "";
+		if (p_date != null) {
+			SimpleDateFormat dateOutput = new SimpleDateFormat(p_formatOutput);
+			result = dateOutput.format(p_date);
 		}
+		return result;
+		
 	}
 	/**
 	 * Convert a String date to date Object
@@ -37,17 +74,18 @@ public class DateUtils {
 	 * @param p_format	the format input=output of the date
 	 * @return Date		The date object with the right format
 	 */
-	public Date stringToDate(String sDate, String sFormat) {
-		Date dateForm = null;
+	public Date stringToDateDCTM(String sDate, String sFormat) {
+		
+		Date dateForm  = null;
 
 		if (sDate.equals("")) {
 			return null;
 		} else {
 			if (!"nulldate".equalsIgnoreCase(sDate)) {
-				SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
-				//TODO Gerer l'exception
+				sDate = sDate.substring(0, 10);
 				try {
-					dateForm = sdf.parse(sDate);
+					 dateForm = new SimpleDateFormat(sFormat).parse(sDate);
+					 
 				} catch (ParseException e) {
 					e.printStackTrace();
 
@@ -65,32 +103,32 @@ public class DateUtils {
 	 * @param p_outputFormat the output format of the date
 	 * @return Date		The date object with the right format
 	 */
-	public Date stringToDate(String sDate, String p_inputFormat, String p_outputFormat) {
-		Date dateForm = null;
-
-		if (sDate.equals("")) {
-			return null;
-		} else {
-			if (!"nulldate".equalsIgnoreCase(sDate)) {
-
-				SimpleDateFormat inputDate = new SimpleDateFormat(p_inputFormat);
-				SimpleDateFormat output = new SimpleDateFormat(p_outputFormat);
-
-				try {
-
-					inputDate.parse(sDate);
-
-					dateForm = stringToDate(output.format(inputDate), p_outputFormat);
-
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-		}
-
-		return dateForm;
-	}
+//	public Date stringToDate(String sDate, String p_inputFormat, String p_outputFormat) {
+//		Date dateForm = null;
+//
+//		if (sDate.equals("")) {
+//			return null;
+//		} else {
+//			if (!"nulldate".equalsIgnoreCase(sDate)) {
+//
+//				SimpleDateFormat inputDate = new SimpleDateFormat(p_inputFormat);
+//				SimpleDateFormat output = new SimpleDateFormat(p_outputFormat);
+//
+//				try {
+//
+//					inputDate.parse(sDate);
+//
+//					dateForm = stringToDate(output.format(inputDate), p_outputFormat);
+//
+//				} catch (ParseException e1) {
+//					e1.printStackTrace();
+//				}
+//
+//			}
+//		}
+//
+//		return dateForm;
+//	}
 
 	public String dateToString(Date p_date, String p_formatOutput) {
 		String result = "";
@@ -118,11 +156,11 @@ public class DateUtils {
 		return sdf.format(cal.getTime());
 	}
 
-	public Date nowDate(String p_format) {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(p_format);
-		return stringToDate(sdf.format(cal.getTime()), p_format);
-	}
+//	public Date nowDate(String p_format) {
+//		Calendar cal = Calendar.getInstance();
+//		SimpleDateFormat sdf = new SimpleDateFormat(p_format);
+//		return stringToDate(sdf.format(cal.getTime()), p_format);
+//	}
 
 	public int getYear(Date p_date) {
 

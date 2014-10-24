@@ -20,7 +20,7 @@ import com.csc.vim.framework.service.impl.BusinessService;
 @SuppressWarnings("unused")
 public class BusinessServiceAV2Tester {
 	private static final String r_object_id = "090d8b66800135cd";
-	private static final String poNumber = "40001003";
+	private static final String poNumber = "30000090000";
 	@Autowired
 	BusinessService businessServiceInstance;
 	/*
@@ -34,6 +34,7 @@ public class BusinessServiceAV2Tester {
 		invoiceInstance.setInvoiceFamily(1);
 		invoiceInstance.setPurchaseOrder(new PurchaseOrder());
 		invoiceInstance.getPurchaseOrder().setPoNumber(poNumber);
+		
 		businessServiceInstance.processAV2(invoiceInstance);
 		Assert.assertNotNull(invoiceInstance.getSapMMDocumentNumber());
 	}

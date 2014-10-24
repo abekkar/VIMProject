@@ -209,7 +209,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			// ======================================== 1/ SET INUPUT =======================================
 			// ==============================================================================================
 			if (pInvoice.getInvoiceCategory()== 1 || pInvoice.getInvoiceCategory()== 0)
-				function.getImportParameterList().setValue("REFDOCCATEGORY", pInvoice.getInvoiceCategory());
+				function.getImportParameterList().setValue("REFDOCCATEGORY", 1);
 			//TODO
 //			if (pInvoice.getSapBlockingCode()!= null)
 //				function.getImportParameterList().setValue("PBLOCK", pInvoice.getSapBlockingCode());
@@ -219,7 +219,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure("HEADERDATA");
 			// Document date
 			if (null != pInvoice.getInvoiceDate())
-				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDate(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
+				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
 			strucHeaderData.setValue("DOC_TYPE", DOC_TYPE);
 			// Invoice Reference
 			strucHeaderData.setValue("REF_DOC_NO", pInvoice.getInvoiceReference());
@@ -232,10 +232,10 @@ public class InvoiceSapDao extends AbstractSapDao {
 			strucHeaderData.setValue("COMP_CODE", COMPANY_CODE);
 			//Invoice Currency
 			strucHeaderData.setValue("CURRENCY", pInvoice.getInvoiceCurrency());
-			if (null != pInvoice.getScanningDate() ){
-				strucHeaderData.setValue("BLINE_DATE", pInvoice.getScanningDate());
+			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
+				strucHeaderData.setValue("BLINE_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"dd.mm.yyyy"));
 				//Recuperation de la date du document
-				strucHeaderData.setValue("PSTNG_DATE", pInvoice.getScanningDate());
+				strucHeaderData.setValue("PSTNG_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"dd.mm.yyyy") );
 			}
 				
 			
@@ -248,19 +248,18 @@ public class InvoiceSapDao extends AbstractSapDao {
 			//Payment Condition
 			strucHeaderData.setValue("PMNTTRMS", pInvoice.getPaymentCondition());	
 			// GRoss Amount
-			DecimalFormat transform = new DecimalFormat("0.00");
-			String gross_amount = transform.format(pInvoice.getInvoiceGrossAmount());
-			gross_amount = gross_amount.replace(",", ".");
-			strucHeaderData.setValue("GROSS_AMOUNT", Double.parseDouble(gross_amount));
+			if (pInvoice.getInvoiceGrossAmount() != null){
+				String gross_amount = pInvoice.getInvoiceGrossAmount().replace(",", ".");
+				strucHeaderData.setValue("GROSS_AMOUNT", Double.parseDouble(gross_amount));
+			}
 			
+			// DEL_COSTS (Indicator: freight and packaging cost)
+			strucHeaderData.setValue("DEL_COSTS", pInvoice.getPackagingCosts()+pInvoice.getFreightCosts());
 			// ****************************************
 			// *** ADDITIONALHEADERDATA STRUCTURE  ****
 			// ****************************************
 			com.sap.conn.jco.JCoStructure strucAdditionalHeadData = function.getImportParameterList().getStructure(ADDITIONAL_HEADERDATA_STRUCTURE);
-			
-			// DEL_COSTS (Indicator: freight and packaging cost)
-			strucAdditionalHeadData.setValue("DEL_COSTS", pInvoice.getPackagingCosts()+pInvoice.getFreightCosts());
-			
+				
 			//ASSIGN_DELIV (Indicator: Delivery item assignment): X
 			strucAdditionalHeadData.setValue("ASSIGN_DELIV", SAP_X_VALUE);
 			
@@ -329,8 +328,8 @@ public class InvoiceSapDao extends AbstractSapDao {
 				//retrieve blocking code from sap and set it in  sap_blocking_code Documentum's field
 				// PAYMENT BLOCK CODE
 				pInvoice.setSapBlockingCode(function.getExportParameterList().getString(ZBLOCKINGCODE));
-				logger.warn("Invoice:" + function.getExportParameterList().getString(INVOICE_DOC_NUMBER) + " created with PO=" + pInvoice.getPurchaseOrder().getPoNumber());
-	
+				logger.debug("Invoice:" + function.getExportParameterList().getString(INVOICE_DOC_NUMBER) + " created with PO=" + pInvoice.getPurchaseOrder().getPoNumber());
+				logger.debug("Creating SAP invoice for the invoice reference :  " + pInvoice.getInvoiceReference());
 			}
 	
 			// *******************************
@@ -343,7 +342,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 					for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
 						SapMessage sapMessageInstance = new SapMessage();
 						sapMessageResultTable.setRow(j);
-						sapMessageInstance.setMessageCode(sapMessageResultTable.getString("CODE"));
+						sapMessageInstance.setMessageCode(sapMessageResultTable.getString("ID"));
 						sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
 						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
 							sapMessageInstance.setType(MessageTypeEnum.Succes);
@@ -355,7 +354,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 							sapMessageInstance.setType(MessageTypeEnum.Info);
 						if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Error.toString())){
 							sapMessageInstance.setType(MessageTypeEnum.Error);
-							logger.warn("Invoice with PO=" + pInvoice.getPurchaseOrder().getPoNumber() + " error creating the invoice: " + sapMessageInstance.getMessageText());
+							logger.error("Invoice with PO=" + pInvoice.getPurchaseOrder().getPoNumber() + " error creating the invoice: " + sapMessageInstance.getMessageText());
 						}
 						pInvoice.getSapReturnMessage().add(sapMessageInstance);
 					}
@@ -366,7 +365,6 @@ public class InvoiceSapDao extends AbstractSapDao {
 			pInvoice.setInvoiceStatus(helperConstant.INV_STATUS_SAP_ERROR);
 			logger.error("Error during creating invoice with the reference :"+pInvoice.getInvoiceReference()+" with BAPI  "+BAPI_INCOMINGINVOICE_SAVE+" informations : "+ e.getMessage());
 		}	
-		logger.debug("Creating SAP invoice for the invoice reference :  " + pInvoice.getInvoiceReference());
 		return pInvoice;
 	}
 
@@ -406,21 +404,16 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// *** Structure DOCUMENTHEADER ****
 		// *********************************
 		com.sap.conn.jco.JCoStructure strucDocumentHeader = function.getImportParameterList().getStructure(DOCUMENT_HEADER_STRUCTURE);
-		//TODO
-		//Modify the format
-		// Document date
 		strucDocumentHeader.setValue("BUS_ACT", parametersProperties.getBusAct());
 		strucDocumentHeader.setValue("USERNAME", pInvoice.getSapInvoiceCreator());
 		strucDocumentHeader.setValue("HEADER_TXT", pInvoice.getScanningReference());
 		strucDocumentHeader.setValue("COMP_CODE", COMPANY_CODE );
 		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null )
-			//TODO
-			//format date to dd.mm.yyyy
-			strucDocumentHeader.setValue("DOC_DATE", pInvoice.getInvoiceDate());
+			strucDocumentHeader.setValue("DOC_DATE",dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"dd.mm.yyyy"));
 		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null ){
 			strucDocumentHeader.setValue("PSTNG_DATE", pInvoice.getScanningDate());
-			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDate(pInvoice.getScanningDate(), "yyyy")));
-			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDate(pInvoice.getScanningDate(), "mm")) );
+			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "dd.mm.yyyy")));
+			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "dd.mm.yyyy")) );
 		}
 		//TODO
 		//Bloc if for invoice or credit note
@@ -514,7 +507,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
 					SapMessage sapMessageInstance = new SapMessage();
 					sapMessageResultTable.setRow(j);
-					sapMessageInstance.setMessageCode(sapMessageResultTable.getString("CODE"));
+					sapMessageInstance.setMessageCode(sapMessageResultTable.getString("ID"));
 					sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
 					if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
 						sapMessageInstance.setType(MessageTypeEnum.Succes);
@@ -635,7 +628,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 					sapMessageInstance.setType(MessageTypeEnum.Error);
 					errorExistence = true;
 				}
-				sapMessageInstance.setMessageCode(sapMessageResultTable.getString("CODE"));
+				sapMessageInstance.setMessageCode(sapMessageResultTable.getString("ID"));
 				sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
 				invoiceInstance.getSapReturnMessage().add(sapMessageInstance);
 			}
@@ -680,7 +673,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 					}
 				}
 				else{
-					
+					//TODO
 				}
 			}
 			// *****************************
@@ -802,10 +795,11 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.getPurchaseOrder().setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
 				invoiceInstance.getPurchaseOrder().setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
 			}
+			logger.debug("Retrieving SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
 		} catch (Exception e) {
 			logger.error("Error during getting BAPI  "+ZMM_BAPI_RETRIEVE_TO_DCTM+" informations : "+ e.getMessage());
 		}	
-		logger.debug("Retrieving SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
+		
 		return invoiceInstance;
 	}
 
@@ -847,7 +841,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			try {
 				 createDestinationDataFile(parametersProperties.getSapDataFile(), connectProperties);
 				 destination = JCoDestinationManager.getDestination(parametersProperties.getSapDataFile());
-				 logger.debug("Connect succesfully to SAP");
+				 logger.debug("Connect succesfully to SAP: "+destination.toString());
 			} catch (JCoException e) {
 				e.printStackTrace();
 			} 
