@@ -585,7 +585,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			function.getImportParameterList().setValue("ITEMS", SAP_X_VALUE);
 			if (null != pInvoice.getListOfBankDetails() ){
 				for (BankDetails bankInfo : pInvoice.getListOfBankDetails()) {
-					function.getImportParameterList().getStructure(SAP_IBAN_INPUT_STRUCTURE).setValue("IBAN", bankInfo.getAccountIban());
+					function.getImportParameterList().getTable(SAP_IBAN_INPUT_STRUCTURE).setValue("IBAN", bankInfo.getAccountIban());
 				}
 			}
 			function.getImportParameterList().setValue("THRESHOLD_KEY", pInvoice.getSelectedThresholdAmount());
