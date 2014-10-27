@@ -84,7 +84,7 @@ public class Invoice {
 	private String salesOrderNumber;
 	private double freightCosts;
 	private double packagingCosts;
-	private List<String> goodReceiptNumber;
+	private boolean goodReceiptNumber;
 	private String scanningReference;
 	private String scanningDate;
 	private String sapFIDocumentNumber;
@@ -212,11 +212,13 @@ public class Invoice {
 		this.salesOrderNumber = salesOrderNumber;
 	}
 
-	public List<String> getGoodReceiptNumber() {
+
+
+	public boolean isGoodReceiptNumber() {
 		return goodReceiptNumber;
 	}
-	
-	public void setGoodReceiptNumber(List<String> goodReceiptNumber) {
+
+	public void setGoodReceiptNumber(boolean goodReceiptNumber) {
 		this.goodReceiptNumber = goodReceiptNumber;
 	}
 
@@ -561,7 +563,7 @@ public class Invoice {
 			String invoiceVatAmount, String invoiceGrossAmount,
 			String invoiceReference, String salesOrderNumber,
 			double freightCosts, double packagingCosts,
-			List<String> goodReceiptNumber, String scanningReference,
+			boolean goodReceiptNumber, String scanningReference,
 			String scanningDate, String sapFIDocumentNumber,
 			int sapFIDocumentDate, String sapMMDocumentNumber,
 			int sapMMDocumentDate, String companyCode, int invoiceFamily,
@@ -623,6 +625,8 @@ public class Invoice {
 		this.invoicecountryOrigin = invoicecountryOrigin;
 		this.paymentCondition = paymentCondition;
 	}
+
+	
 
 	
 }

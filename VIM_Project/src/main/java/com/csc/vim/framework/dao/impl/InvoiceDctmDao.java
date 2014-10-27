@@ -304,15 +304,10 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 				pInvoice.getInvoiceIban().add(invoice.getAllRepeatingStrings(INVOICE_IBAN_LIST, ","));
 			}
 		}
-		StringTokenizer listOfGoodReceipts = new StringTokenizer(invoice.getAllRepeatingStrings(GOOD_RECEIPTS, ","), ",");
-		if (null != listOfGoodReceipts) {
-			pInvoice.setGoodReceiptNumber(new ArrayList<String>());
-			while (listOfGoodReceipts.hasMoreTokens())
-				while (listOfGoodReceipts.hasMoreTokens()) {
-					pInvoice.getGoodReceiptNumber().add(
-							listOfGoodReceipts.nextToken());
-				}
-		}
+		if (Boolean.parseBoolean(invoice.getString(GOOD_RECEIPTS)) == false)
+			pInvoice.setGoodReceiptNumber(false);
+		else
+			pInvoice.setGoodReceiptNumber(true);
 		return pInvoice;
 	}
 	
@@ -535,8 +530,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		invoiceDqlUpdater.append("SET "+SAP_INVOICE_CREATOR+" ='"+ pInvoice.getSapInvoiceCreator() + "' ");
 		invoiceDqlUpdater.append("SET "+SALES_ORDER_NUMBER+" ='"+ pInvoice.getSalesOrderNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+SALES_ORDER_POSITION+" ='"+ pInvoice.getSalesOrderPosition() + "' ");
-		if (null != pInvoice.getGoodReceiptNumber() )
-			invoiceDqlUpdater.append("SET "+GOOD_RECEIPTS+" ='"+ listToRepeatingValueConverter(pInvoice.getGoodReceiptNumber()) + "' ");
+		invoiceDqlUpdater.append("SET "+GOOD_RECEIPTS+" ="+ pInvoice.isGoodReceiptNumber()+ " ");
 		invoiceDqlUpdater.append(" WHERE r_object_id = '"+ pInvoice.getrObjectId() + "' ");
 		logger.debug("Executing: " + invoiceDqlUpdater.toString());
 		DQLquery.setDQL(invoiceDqlUpdater.toString());

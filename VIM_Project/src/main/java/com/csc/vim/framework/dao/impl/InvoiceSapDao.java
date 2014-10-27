@@ -60,17 +60,17 @@ public class InvoiceSapDao extends AbstractSapDao {
 	 private static final String SAP_IBAN_STRUCTURE              = "SAP_IBAN";
 	 private static final String SAP_IBAN_INPUT_STRUCTURE        = "T_IBAN";
 	 private static final String SAP_IBAN_OUTPUT_STRUCTURE       = "SAP_IBAN";
-	 //private static final String PO_ITEMS_STRUCTURE            = "PO_ITEMS";
+	 private static final String PO_ITEMS_STRUCTURE              = "PO_ITEMS";
 	 private static final String THRESHOLD_AMOUNT_STRUCTURE      = "THRESHOLD_AMOUNT";
 	 private static final String BLOCKING_CODE_STRUCTURE         = "BLOCKING_CODE";
 	 private static final String ADDITIONAL_HEADERDATA_STRUCTURE = "ADDITIONALHEADERDATA";
 	 private static final String HEADERDATA_STRUCTURE            = "HEADERDATA";
 	 
-	 
+	 private static final String GOOD_RECEIPT_IND                = "GR_IND";
 	 /*
 	  * ZMM_VIM_SYNCHRO DATA Returned
 	  */
-	 private static final String INVOICE_STATUS = "INVOICE_STATUS";
+	 private static final String INVOICE_STATUS                  = "INVOICE_STATUS";
 	 
 	 /*
 	  * Bank Detail
@@ -682,10 +682,11 @@ public class InvoiceSapDao extends AbstractSapDao {
 						invoiceInstance.getListOfThreshold().add(thresholdInstance);
 					}
 				}
-				else{
-					//TODO
-				}
 			}
+			if (function.getTableParameterList().getTable(PO_ITEMS_STRUCTURE).getString(GOOD_RECEIPT_IND).equalsIgnoreCase("0"))
+				invoiceInstance.setGoodReceiptNumber(false);
+			else
+				invoiceInstance.setGoodReceiptNumber(true);
 			// *****************************
 			// **** GET Bank Detail LIST   *
 			// *****************************
