@@ -27,10 +27,11 @@ public class BusinessServiceAV2Tester {
 	 * Test passant document existant sur Documentum
 	 * Integration de la facture dans sap en MM et comptablisitation effectuée
 	 */
+	//OK
 	@Test
 	public void testProcessAV2MM(){
 		Invoice invoiceInstance = new Invoice();
-		invoiceInstance.setrObjectId("090d8b668001859c");
+		invoiceInstance.setrObjectId("090d8b66800135cd");
 		invoiceInstance.setInvoiceFamily(1);
 		invoiceInstance.setPurchaseOrder(new PurchaseOrder());
 		invoiceInstance.getPurchaseOrder().setPoNumber(poNumber);
@@ -50,7 +51,7 @@ public class BusinessServiceAV2Tester {
 		businessServiceInstance.processAV2(invoiceInstance);
 		Assert.assertNotNull(invoiceInstance.getSapFIDocumentNumber());
 	}
-	
+	//OK
 	@Test
 	public void testGetInformationsFromDCTM(){
 		Invoice invoiceInstance = new Invoice();
@@ -60,6 +61,7 @@ public class BusinessServiceAV2Tester {
 		errorListInstance = businessServiceInstance.getInformationsFromDCTM(invoiceInstance.getrObjectId());
 	}
 	
+	//OK
 	@Test
 	public void testRetrievingSapInformations(){
 		Invoice invoiceInstance = new Invoice();

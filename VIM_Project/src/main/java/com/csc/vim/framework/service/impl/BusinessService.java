@@ -123,7 +123,7 @@ public class BusinessService {
 		//The invoice is booked during the creation 
 		if (pInvoice.getrObjectId()!= null)
 		{
-			if ((pInvoice.getInvoiceFamily() == InvoiceCategoryEnum.WhitPoGR.getCategoryId()) || (pInvoice.getInvoiceFamily() == InvoiceCategoryEnum.WhitPO_GR.getCategoryId()) )
+			if ((pInvoice.getInvoiceCategory() == InvoiceCategoryEnum.WhitPoGR.getCategoryId()) || (pInvoice.getInvoiceCategory() == InvoiceCategoryEnum.WhitPO_GR.getCategoryId()) )
 					pInvoice = invoiceSapServiceInstance.createInvoiceWithPO(pInvoice);
 			else
 			{

@@ -203,13 +203,13 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			IDfQuery DQLquery = new DfQuery();
 			IDfSession session = dctmInstance.getSession();
 			DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
-			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);		 
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);		 
 			DQLquery = updateSupplierDetail(pInvoice, DQLquery, session);
-			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_EXEC_QUERY);
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);
 			DQLquery = updatePurchaseOrder(pInvoice, DQLquery, session);
-			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_CACHE_QUERY);
 			DQLquery = updateBankInformations(pInvoice, DQLquery, session);
-			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_EXEC_QUERY);
+			DQLquery.execute(dctmInstance.getSession(),IDfQuery.DF_CACHE_QUERY);
 			dctmInstance.closeSession(session);
 		return pInvoice;
 	}
@@ -636,7 +636,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	IDfCollection invoiceSupplierDetail = queryGetInvoiceSupplier.execute(session, IDfQuery.DF_READ_QUERY);
 	if (null != invoiceSupplierDetail)
 	{
-		if (pInvoice.getSupplierDetail()!= null){
+		if (invoiceSupplierDetail.next()){
 			StringBuilder SupplierDqlUpdater = new StringBuilder("UPDATE "+NAMESPACE+"_supplier OBJECTS ");
 			if (pInvoice.getSupplierDetail().getSupplierSelectedIban() != null)
 				SupplierDqlUpdater.append("SET "+SUPPLIER_DEFAULT_IBAN+" ='" +pInvoice.getSupplierDetail().getSupplierSelectedIban()+ "' ");
@@ -653,7 +653,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			if (pInvoice.getSupplierDetail().getSupplierVatNumber() != null)
 				SupplierDqlUpdater.append("SET "+SUPPLIER_VAT_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierVatNumber() + "' ");
 			SupplierDqlUpdater.append("SET "+SUPPLIER_NUMBER+" ='" +pInvoice.getSupplierDetail().getSupplierNumber() + "' ");
-			SupplierDqlUpdater.append(" WHERE r_object_id = '" +pInvoice.getSupplierDetail().getrObjectId() + "' ");
+			SupplierDqlUpdater.append(" WHERE r_object_id = '" +invoiceSupplierDetail.getString("r_object_id") + "' ");
 			logger.debug("Updating Supplier: "+ SupplierDqlUpdater.toString());
 			DQLquery.setDQL(SupplierDqlUpdater.toString());
 		}

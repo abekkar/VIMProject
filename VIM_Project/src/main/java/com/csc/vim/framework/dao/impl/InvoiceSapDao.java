@@ -1,7 +1,6 @@
 package com.csc.vim.framework.dao.impl;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -34,6 +33,10 @@ public class InvoiceSapDao extends AbstractSapDao {
 	private static final String BAPI_INCOMINGINVOICE_SAVE  = "ZMM_BAPI_INCOMINGINVOICE_SAVE";
 	private static final String ZMM_BAPI_RETRIEVE_TO_DCTM  = "ZMM_BAPI_RETRIEVE_TO_DCTM";
 	private static final String ZFI_BAPI_ACC_DOCUMENT_POST = "ZFI_BAPI_ACC_DOCUMENT_POST";
+	private static final String ZMM_VIM_SYNCHRO            = "ZMM_VIM_SYNCHRO";
+	private static final String ZFI_VIM_SYNCHRO            = "ZFI_VIM_SYNCHRO";  
+	
+	
 	private static final String ACCOUNT_PAYABLE_STRUCTURE = "ACCOUNTPAYABLE";
 	private static final String ACCOUNT_GL_STRUCTURE       = "ACCOUNT_GL";
 	private static final String DOCUMENT_HEADER_STRUCTURE = "DOCUMENTHEADER";
@@ -60,7 +63,14 @@ public class InvoiceSapDao extends AbstractSapDao {
 	 //private static final String PO_ITEMS_STRUCTURE            = "PO_ITEMS";
 	 private static final String THRESHOLD_AMOUNT_STRUCTURE      = "THRESHOLD_AMOUNT";
 	 private static final String BLOCKING_CODE_STRUCTURE         = "BLOCKING_CODE";
-	 private static final String ADDITIONAL_HEADERDATA_STRUCTURE ="ADDITIONALHEADERDATA";
+	 private static final String ADDITIONAL_HEADERDATA_STRUCTURE = "ADDITIONALHEADERDATA";
+	 private static final String HEADERDATA_STRUCTURE            = "HEADERDATA";
+	 
+	 
+	 /*
+	  * ZMM_VIM_SYNCHRO DATA Returned
+	  */
+	 private static final String INVOICE_STATUS = "INVOICE_STATUS";
 	 
 	 /*
 	  * Bank Detail
@@ -216,7 +226,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			// *****************************
 			// *** Structure HEADERDATA ****
 			// *****************************
-			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure("HEADERDATA");
+			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure(HEADERDATA_STRUCTURE);
 			// Document date
 			if (null != pInvoice.getInvoiceDate())
 				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
@@ -782,7 +792,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 					purchaseOrderInstance.setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
 				}
 				purchaseOrderInstance.setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
-				invoiceInstance.getPurchaseOrder().setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
+				purchaseOrderInstance.setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
 				invoiceInstance.setPurchaseOrder(purchaseOrderInstance);
 			}
 			else{
@@ -803,7 +813,210 @@ public class InvoiceSapDao extends AbstractSapDao {
 		return invoiceInstance;
 	}
 
+	/**
+	 * Synchronize an MM invoice.
+	 * This function will retrieve the invoice status information from SAP  and will return this same invoice object
+	 * @author abekkar
+	 * @since 1.0
+	 * @param pInvoice 	the invoice we are synchronizing. This invoice contains only data that are used as a search criteria
+	 * @return Invoice 	the invoice in input with additional SAP data
+	 * @throws IOException
+	 * @throws JCoException
+	 */
+	public Invoice synchronizeMMInvoice(Invoice pInvoice) {
+		logger.debug("Executing " + ZMM_VIM_SYNCHRO);
+		
+		// open a connection to SAP
+		try {
+			connectToSap();
+		} catch (JCoException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+		JCoFunction function = null;
+		try {
+			function = destination.getRepository().getFunction(ZMM_VIM_SYNCHRO);
+		} catch (JCoException e) {
+			e.printStackTrace();
+		}
+
+		// *************************************
+		// *** SEt the input of the function ***
+		// *************************************
+		try
+		{
+			if (null != pInvoice.getSapMMDocumentNumber() && !"".equalsIgnoreCase(pInvoice.getSapMMDocumentNumber())) {
+				function.getImportParameterList().setValue("INVOICEDOCNUMBER", pInvoice.getSapMMDocumentNumber() );
+			}
+			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
+				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+			}
+		} catch (Exception e) {
+			logger.error("Error during setting BAPI "+ZMM_VIM_SYNCHRO+" Fields : "+ e.getMessage());
+		}
+		// *****************************
+		//  *** Execute the function ***
+		// *****************************
+		try {
+			function.execute(destination);
+		} catch (JCoException e) {
+			e.printStackTrace();
+		}
+
+		// ******************
+		// *** GET OUTPUT ***
+		// ******************
+		Invoice invoiceInstance = pInvoice;
+		// *************************
+		// *** GET ERROR MESSAGE ***
+		// *************************
+		boolean errorExistence = false;
+		com.sap.conn.jco.JCoTable sapMessageResultTable = function.getTableParameterList().getTable("RETURN");
+		if (sapMessageResultTable.getNumRows() != 0) {
+			invoiceInstance.setSapReturnMessage(new ArrayList<SapMessage>());
+			for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
+				SapMessage sapMessageInstance = new SapMessage();
+				sapMessageResultTable.setRow(j);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Succes);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Avert.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Avert);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Abandon.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Abandon);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Info.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Info);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Error.toString())){
+					sapMessageInstance.setType(MessageTypeEnum.Error);
+					errorExistence = true;
+				}
+				sapMessageInstance.setMessageCode(sapMessageResultTable.getString("ID"));
+				sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
+				invoiceInstance.getSapReturnMessage().add(sapMessageInstance);
+			}
+		}
+		// if the returned result contains an error the data retrieving process is stoped
+		if (errorExistence == true)
+			return invoiceInstance;
+		
+		// **************************
+		// *** GET INVOICE DATA   ***
+		// **************************
+		try
+		{
+			if (function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS) != null && !"".equalsIgnoreCase(function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS)))
+				invoiceInstance.setInvoiceStatus(Integer.parseInt(function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS)));
+			logger.debug("Synchronize SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
+		} catch (Exception e) {
+			logger.error("Error during getting BAPI  "+ZMM_VIM_SYNCHRO +" informations : "+ e.getMessage());
+		}	
+		return invoiceInstance;
+	}
+
+	/**
+	 * Synchronize an FI invoice.
+	 * This function will retrieve the invoice status information from SAP  and will return this same invoice object
+	 * @author abekkar
+	 * @since 1.0
+	 * @param pInvoice 	the invoice we are synchronizing. This invoice contains only data that are used as a search criteria
+	 * @return Invoice 	the invoice in input with additional SAP data
+	 * @throws IOException
+	 * @throws JCoException
+	 */
+	//TODO
+	//revoir les entrees sorties de la BAPI
+	public Invoice synchronizeFIInvoice(Invoice pInvoice) {
+		logger.debug("Executing " + ZFI_VIM_SYNCHRO);
+		
+		// open a connection to SAP
+		try {
+			connectToSap();
+		} catch (JCoException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		JCoFunction function = null;
+		try {
+			function = destination.getRepository().getFunction(ZFI_VIM_SYNCHRO);
+		} catch (JCoException e) {
+			e.printStackTrace();
+		}
+
+		// *************************************
+		// *** SEt the input of the function ***
+		// *************************************
+		try
+		{
+			if (null != pInvoice.getSapMMDocumentNumber() && !"".equalsIgnoreCase(pInvoice.getSapMMDocumentNumber())) {
+				function.getImportParameterList().setValue("INVOICEDOCNUMBER", pInvoice.getSapMMDocumentNumber() );
+			}
+			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
+				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+			}
+		} catch (Exception e) {
+			logger.error("Error during setting BAPI "+ZFI_VIM_SYNCHRO+" Fields : "+ e.getMessage());
+		}
+		// *****************************
+		//  *** Execute the function ***
+		// *****************************
+		try {
+			function.execute(destination);
+		} catch (JCoException e) {
+			e.printStackTrace();
+		}
+
+		// ******************
+		// *** GET OUTPUT ***
+		// ******************
+		Invoice invoiceInstance = pInvoice;
+		// *************************
+		// *** GET ERROR MESSAGE ***
+		// *************************
+		boolean errorExistence = false;
+		com.sap.conn.jco.JCoTable sapMessageResultTable = function.getTableParameterList().getTable("RETURN");
+		if (sapMessageResultTable.getNumRows() != 0) {
+			invoiceInstance.setSapReturnMessage(new ArrayList<SapMessage>());
+			for (int j = 0; j < sapMessageResultTable.getNumRows(); j++) {
+				SapMessage sapMessageInstance = new SapMessage();
+				sapMessageResultTable.setRow(j);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Succes.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Succes);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Avert.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Avert);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Abandon.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Abandon);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Info.toString()))
+					sapMessageInstance.setType(MessageTypeEnum.Info);
+				if (sapMessageResultTable.getString("TYPE").equalsIgnoreCase(MessageTypeEnum.Error.toString())){
+					sapMessageInstance.setType(MessageTypeEnum.Error);
+					errorExistence = true;
+				}
+				sapMessageInstance.setMessageCode(sapMessageResultTable.getString("ID"));
+				sapMessageInstance.setMessageText(sapMessageResultTable.getString("MESSAGE"));
+				invoiceInstance.getSapReturnMessage().add(sapMessageInstance);
+			}
+		}
+		// if the returned result contains an error the data retrieving process is stoped
+		if (errorExistence == true)
+			return invoiceInstance;
+		
+		// **************************
+		// *** GET INVOICE DATA   ***
+		// **************************
+		try
+		{
+			if (function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS) != null && !"".equalsIgnoreCase(function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS)))
+				invoiceInstance.setInvoiceStatus(Integer.parseInt(function.getExportParameterList().getStructure(HEADERDATA_STRUCTURE).getString(INVOICE_STATUS)));
+			logger.debug("Synchronize SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
+		} catch (Exception e) {
+			logger.error("Error during getting BAPI  "+ZFI_VIM_SYNCHRO +" informations : "+ e.getMessage());
+		}	
+		return invoiceInstance;
+	}
+	
 	/**
 	 * Initiate a connection with SAP. The connection object is stored into the class variable: destination
 	 * @author abekkar
