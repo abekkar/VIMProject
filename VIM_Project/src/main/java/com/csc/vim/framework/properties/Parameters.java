@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 //@PropertySource("classpath:parameters.properties")
 public class Parameters {
 	
-	@Value("${dfc.globalregistry.password}")
+	@Value("${dctm_password}")
 	public String dctmPassword;
-	@Value("${dfc.globalregistry.repository}")
+	@Value("${dctm_repositoryName}")
 	public String dctmRepository;
-	@Value("${dfc.globalregistry.username}")
+	@Value("${dctm_login}")
 	public String dctmUsername;
 	@Value("${dfc.docbroker.host[0]}")
 	public String dctmHost;

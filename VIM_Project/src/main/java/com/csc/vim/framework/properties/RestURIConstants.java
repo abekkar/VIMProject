@@ -30,4 +30,6 @@ public class RestURIConstants {
 	 * URL TO  synchronise data invoice which status is 8 between SAP and DCTM 
 	 */
     public static final String SYNCHRONISE_STATUS_EIGHT = "/V1/SYNC8";
+    
+    public static final String PO_CREATE 				= "SPO23";
 }

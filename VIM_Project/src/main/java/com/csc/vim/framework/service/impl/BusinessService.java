@@ -20,7 +20,7 @@ public class BusinessService {
 	@Autowired
 	Parameters parametersProperties;
 	@Autowired
-	InvoiceDCTMService invoiceDCTMServiceInstance;
+	InvoiceDctmService invoiceDCTMServiceInstance;
 	
 	@Autowired
 	InvoiceSapService invoiceSapServiceInstance;

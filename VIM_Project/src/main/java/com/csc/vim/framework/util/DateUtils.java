@@ -37,7 +37,7 @@ public class DateUtils {
 	 * @param p_format	the format input=output of the date
 	 * @return Date		The date object with the right format
 	 */
-	public Date stringToDateSAP(String sDate, String sFormat) {
+	public Date stringToDateSap(String sDate, String sFormat) {
 		Date dateForm  = null;
 
 		if (sDate.equals("")) {
@@ -74,7 +74,7 @@ public class DateUtils {
 	 * @param p_format	the format input=output of the date
 	 * @return Date		The date object with the right format
 	 */
-	public Date stringToDateDCTM(String sDate, String sFormat) {
+	public Date stringToDateDctm(String sDate, String sFormat) {
 		
 		Date dateForm  = null;
 
@@ -92,7 +92,6 @@ public class DateUtils {
 				}
 			}
 		}
-
 		return dateForm;
 	}
 
@@ -273,5 +272,20 @@ public class DateUtils {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Extract the date part from a dateTime format
+	 * !!!
+	 * !!! This function works only if the data and time part are separated by a space !!!
+	 * !!!
+	 * @author syongwaiman2
+	 * @since 1.0
+	 * @param pDate	
+	 * @return date under a string format. This date is the part of the dateTime in input
+	 */
+	public String extractDate(String pDate) {
+		String[] dateTime = pDate.split(" ");
+		return dateTime[0];
 	}
 }

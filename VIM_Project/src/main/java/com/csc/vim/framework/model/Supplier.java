@@ -4,10 +4,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.csc.vim.framework.common.model.DematObject;
+
 @XmlRootElement(name = "supplier")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Supplier {
+public class Supplier extends  DematObject{
 
+	// Business Field
 	private String rObjectId;
 	private String supplierNumber;
 	private String supplierIndustry;
@@ -22,7 +25,17 @@ public class Supplier {
 	private String supplierName;
 	private String supplierVatNumber;
 	
+	//Technical Field
+	protected String dctmInvoiceId;		// r_object_id of the invoice link to this Supplier
 	
+	public String getDctmInvoiceId() {
+		return dctmInvoiceId;
+	}
+
+	public void setDctmInvoiceId(String dctmInvoiceId) {
+		this.dctmInvoiceId = dctmInvoiceId;
+	}
+
 	public String getSupplierNumber() {
 		return supplierNumber;
 	}

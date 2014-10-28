@@ -13,6 +13,7 @@ import com.csc.vim.framework.model.ExceptionWrapper;
 import com.csc.vim.framework.model.Invoice;
 import com.csc.vim.framework.properties.RestURIConstants;
 import com.csc.vim.framework.service.impl.BusinessService;
+import com.csc.vim.framework.service.impl.InvoiceDctmService;
 
 @Controller
 @ RequestMapping("/process")
@@ -21,13 +22,21 @@ public class InvoiceController {
 	@Autowired 
 	BusinessService businessServiceInstance;
 	
+	@Autowired
+	InvoiceDctmService invoiceDctmService;
+	
+	@RequestMapping(value="test", method = RequestMethod.GET)
+	public String home() {
+		return "OK";
+	}
+	
 	/*
 	 * AV2 Process
 	 */
 	@RequestMapping(value = RestURIConstants.PROCESS_AV2, method = RequestMethod.GET)
-	public List<ExceptionWrapper> processAV2(@RequestParam String r_object_id){
+	public List<ExceptionWrapper> processAV2(@RequestParam String id){
 		Invoice pInvoice = new Invoice();
-		pInvoice.setrObjectId(r_object_id);
+		pInvoice.setrObjectId(id);
 		return businessServiceInstance.processAV2(pInvoice);
 	}
 	
@@ -35,10 +44,11 @@ public class InvoiceController {
 	 * Getting Invoice SAP Data
 	 */
 	@RequestMapping(value = RestURIConstants.RETRIEVE_SAP, method = RequestMethod.GET)
-	public void retrieveDataFromSAP(@RequestParam String r_object_id){
+	public @ResponseBody Integer retrieveDataFromSAP(@RequestParam String r_object_id){
 		Invoice pInvoice = new Invoice();
 		pInvoice.setrObjectId(r_object_id);
 		businessServiceInstance.retrievingSapInformations(pInvoice);
+		return 0;
 	}
 	
 	/*
@@ -86,5 +96,4 @@ public class InvoiceController {
 	public @ResponseBody void synchroniseStatusEightInvoices() {
 		 businessServiceInstance.synchroniseStatusEightInvoices();
 	}	
-	
 }

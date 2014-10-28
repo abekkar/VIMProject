@@ -105,7 +105,11 @@ public class Invoice {
 	private String invoicecountryOrigin;
 	private String paymentCondition;
 	
+<<<<<<< HEAD
+=======
 	private String rObjectId;
+	private File content;
+>>>>>>> 5509de8... [Excel Stub] CRUD Business Object
 	
 	public String getProcessorLogin() {
 		return processorLogin;

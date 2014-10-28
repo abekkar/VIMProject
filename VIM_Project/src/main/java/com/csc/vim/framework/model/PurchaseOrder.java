@@ -6,11 +6,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.csc.vim.framework.common.model.DematObject;
+
 @XmlRootElement(name = "purchaseOrder")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PurchaseOrder {
+public class PurchaseOrder extends DematObject {
 
-	private String rObjectId;
+	// Business Field
 	private String supplierNumber;
 	private String poDocumentType;
 	private String supplierName;
@@ -19,6 +21,16 @@ public class PurchaseOrder {
 	private String poNumberPosition;
 	
 	
+	private String sapId;				// Not Used for now ....
+
+	public String getSapId() {
+		return sapId;
+	}
+
+	public void setSapId(String sapId) {
+		this.sapId = sapId;
+	}
+
 	public Date getPoDate() {
 		return poDate;
 	}
@@ -27,13 +39,6 @@ public class PurchaseOrder {
 		this.poDate = poDate;
 	}
 
-	public String getrObjectId() {
-		return rObjectId;
-	}
-	
-	public void setrObjectId(String rObjectId) {
-		this.rObjectId = rObjectId;
-	}
 	public String getPoNumber() {
 		return poNumber;
 	}
@@ -72,10 +77,13 @@ public class PurchaseOrder {
 		this.supplierName = supplierName;
 	}
 
-	public PurchaseOrder(String rObjectId, String supplierNumber,
-			String poDocumentType, String supplierName, Date poDate,
-			String poNumber, String poNumberPosition) {
-		super();
+	public PurchaseOrder(String rObjectId, 
+			String supplierNumber,
+			String poDocumentType, 
+			String supplierName, 
+			Date poDate,
+			String poNumber,
+			String poNumberPosition) {
 		this.rObjectId = rObjectId;
 		this.supplierNumber = supplierNumber;
 		this.poDocumentType = poDocumentType;

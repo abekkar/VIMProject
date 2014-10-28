@@ -3,7 +3,6 @@ package com.csc.vim.framework.dao.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,8 @@ import com.csc.vim.framework.model.Message;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.model.Supplier;
 import com.csc.vim.framework.model.Threshold;
-import com.csc.vim.framework.util.DCTMHelper;
 import com.csc.vim.framework.util.DateUtils;
+import com.csc.vim.framework.util.DctmHelper;
 import com.csc.vim.framework.util.SapHelper;
 import com.documentum.fc.client.DfAuthenticationException;
 import com.documentum.fc.client.DfIdentityException;
@@ -34,15 +33,17 @@ import com.documentum.fc.common.DfException;
 import com.documentum.fc.common.DfId;
 
 @Component
-public class InvoiceDctmDao implements IInvoiceDctmDao {
+public class InvoiceDctmDao implements IInvoiceDctmDao{
 
 	@Autowired
-	private DCTMHelper dctmInstance;
+	private DctmHelper dctmInstance;
+	
 	@Autowired
 	private DateUtils dateUtils;
+	
 	@Autowired
 	private SapHelper sapInstance;
-
+	
 	protected final Logger logger = LoggerFactory
 			.getLogger(InvoiceDctmDao.class);
 	
@@ -220,7 +221,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			IDfSession session = dctmInstance.getSession();
 			DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
 			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);	
-			DQLquery = updateThresholdProperties( pInvoice, DQLquery);
+			DQLquery = createThresholdProperties( pInvoice, DQLquery);
 			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);
 			DQLquery = updateSupplierDetail(pInvoice, DQLquery, session);
 			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);
@@ -275,7 +276,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		pInvoice.setGlobalLevelController(invoice.getString(GLOBAL_LEVEL_CONTROLLER));
 		pInvoice.setSelectedApprovalGroup(invoice.getString(SELECTED_APPROVAL_GROUP));
 		pInvoice.setInvoiceCurrency(invoice.getString(INVOICE_CURRENCY));
-		pInvoice.setInvoiceDate(invoice.getString(INVOICE_DATE));
+			pInvoice.setInvoiceDate(dateUtils.extractDate(invoice.getString(INVOICE_DATE)));
 		pInvoice.setCompanyCode(invoice.getString(COMPANY_CODE));
 		if (null != invoice.getString(INVOICE_FAMILY))
 			pInvoice.setInvoiceFamily(Integer.parseInt(invoice.getString(INVOICE_FAMILY)));
@@ -303,7 +304,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		pInvoice.setPaymentCondition(invoice.getString(PAYMENT_CONDITION));
 		pInvoice.setSelectedThresholdAmount(invoice.getString(SEL_THRESHOLD_AMOUNT));
 		pInvoice.setScanningReference(invoice.getString(SCANNING_REFERENCE));
-		pInvoice.setScanningDate(invoice.getString(SCANNING_DATE));
+			pInvoice.setScanningDate(dateUtils.extractDate(invoice.getString(SCANNING_DATE)));
 		pInvoice.setCompanyTaxNumber(invoice.getString(COMPANY_TAX_NUMBER));
 		pInvoice.setCompanyVatNumber(invoice.getString(COMPANU_VAT_NUMBER));
 		pInvoice.setSapInvoiceCreator(invoice.getString(SAP_INVOICE_CREATOR));
@@ -456,7 +457,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			while (invoicePurchaseOrder.next()) {
 				
 				pInvoice.getPurchaseOrder().setPoDocumentType(invoicePurchaseOrder.getString(PURCHASE_ORDER_DOC_TYPE));
-				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDateDCTM(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),DCTM_DATE_FORMAT));
+				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDateDctm(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),DCTM_DATE_FORMAT));
 				pInvoice.getPurchaseOrder().setPoNumber(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER));
 				pInvoice.getPurchaseOrder().setPoNumberPosition(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER_POS));
 				pInvoice.getPurchaseOrder().setSupplierName(invoicePurchaseOrder.getString(PO_SUPPLIER_NAME));
@@ -519,15 +520,15 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			invoiceDqlUpdater.append("SET "+GLOBAL_LEVEL_CONTROLLER+" ='"+ pInvoice.getGlobalLevelController() + "' ");
 		invoiceDqlUpdater.append("SET "+SELECTED_APPROVAL_GROUP+" ='"+ pInvoice.getSelectedApprovalGroup() + "' ");
 		if (null !=pInvoice.getInvoiceCurrency() && !pInvoice.getInvoiceCurrency().equalsIgnoreCase(""))
-			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" ='"+ pInvoice.getInvoiceCurrency() + "' ");
+			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" = '"+ pInvoice.getInvoiceCurrency() + "' ");
 		if (null != pInvoice.getInvoiceDate() )
 			if (!pInvoice.getInvoiceDate().equalsIgnoreCase("nulldate")  )
 				invoiceDqlUpdater.append("SET "+INVOICE_DATE+" =date('"+ pInvoice.getInvoiceDate().substring(0, 10) + "','"+DCTM_DATE_FORMAT+"') ");
 		invoiceDqlUpdater.append("SET "+COMPANY_CODE+" ='"+ pInvoice.getCompanyCode() + "' ");
 		invoiceDqlUpdater.append("SET "+INVOICE_FAMILY+"="+ pInvoice.getInvoiceFamily() + " ");
-		if (null != pInvoice.getInvoiceGrossAmount() )
+		if (null != pInvoice.getInvoiceGrossAmount() && pInvoice.getInvoiceGrossAmount().length() > 0)
 			invoiceDqlUpdater.append("SET "+INVOICE_GROSS_AMOUNT+" ="+ pInvoice.getInvoiceGrossAmount() + " ");
-		if (null != pInvoice.getInvoiceNetAmount() )
+		if (null != pInvoice.getInvoiceNetAmount() && pInvoice.getInvoiceNetAmount().length() > 0)
 			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT+" ="+ pInvoice.getInvoiceNetAmount() + " ");
 		if (null !=  pInvoice.getInvoiceNetAmountEur() )
 			invoiceDqlUpdater.append("SET "+INVOICE_NET_AMOUNT_EUR+" ="+ pInvoice.getInvoiceNetAmountEur() + " ");
@@ -556,8 +557,11 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			 invoiceDqlUpdater.append("SET "+SAP_FI_DOC_DATE+" ="+ pInvoice.getSapFIDocumentDate() + " ");
 		if ( pInvoice.getSapMMDocumentDate() != 0 )
 			 invoiceDqlUpdater.append("SET "+SAP_MM_DOC_DATE+" ="+ pInvoice.getSapMMDocumentDate() + " ");
-		invoiceDqlUpdater.append("SET "+FREIGHT_COST+" ="+ pInvoice.getFreightCosts() + " ");
-		invoiceDqlUpdater.append("SET "+PACKAGING_COST+" ="+ pInvoice.getPackagingCosts() + " ");
+		
+		if ( pInvoice.getFreightCosts() != null)
+			invoiceDqlUpdater.append("SET "+FREIGHT_COST+" ="+ pInvoice.getFreightCosts() + " ");
+		if ( pInvoice.getPackagingCosts() != null)
+			invoiceDqlUpdater.append("SET "+PACKAGING_COST+" ="+ pInvoice.getPackagingCosts() + " ");
 		invoiceDqlUpdater.append("SET "+PAYMENT_CONDITION+" ='"+ pInvoice.getPaymentCondition() + "' ");
 		invoiceDqlUpdater.append("SET "+SEL_THRESHOLD_AMOUNT+" ='"+ pInvoice.getSelectedThresholdAmount() + "' ");
 		if (null != pInvoice.getInvoiceIban())
@@ -580,7 +584,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	
 
 	private IDfQuery createThresholdProperties(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{
-		
+		return null;
 	}
 	@SuppressWarnings("unused")
 	private IDfQuery updateInvoiceLines(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{

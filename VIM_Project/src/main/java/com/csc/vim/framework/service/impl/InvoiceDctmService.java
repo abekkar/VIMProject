@@ -17,11 +17,11 @@ import com.documentum.fc.client.DfServiceException;
 import com.documentum.fc.common.DfException;
 
 @Component
-public class InvoiceDCTMService {
-
+public class InvoiceDctmService {
+	
 	@Autowired
 	InvoiceDctmDao invoiceDctmDaoInstance;
-	protected final Logger logger = LoggerFactory.getLogger(InvoiceDCTMService.class);
+	protected final Logger logger = LoggerFactory.getLogger(InvoiceDctmService.class);
 	
 	public Invoice readInvoiceFromDctm(Invoice pInvoice) throws DfException, IOException,DfIdentityException,DfAuthenticationException,DfServiceException,DfPrincipalException,Exception {
 			return invoiceDctmDaoInstance.retrieveInvoice(pInvoice);
@@ -38,5 +38,4 @@ public class InvoiceDCTMService {
 	public List<Invoice> retrieveInvoicesByStatus(Integer status) throws Exception{
 			return invoiceDctmDaoInstance.getInvoicesByStatut(status);
 	}
-	
 }

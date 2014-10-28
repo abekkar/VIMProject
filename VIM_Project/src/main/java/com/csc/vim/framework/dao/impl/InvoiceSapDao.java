@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.csc.vim.framework.model.Message;
 import com.csc.vim.framework.dao.AbstractSapDao;
 import com.csc.vim.framework.model.BankDetails;
 import com.csc.vim.framework.model.Invoice;
+import com.csc.vim.framework.model.Message;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.model.Supplier;
 import com.csc.vim.framework.model.Threshold;
@@ -229,7 +229,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 			com.sap.conn.jco.JCoStructure strucHeaderData = function.getImportParameterList().getStructure(HEADERDATA_STRUCTURE);
 			// Document date
 			if (null != pInvoice.getInvoiceDate())
-				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
+				strucHeaderData.setValue("DOC_DATE", dateUtils.stringToDateSap(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
 			strucHeaderData.setValue("DOC_TYPE", DOC_TYPE);
 			// Invoice Reference
 			strucHeaderData.setValue("REF_DOC_NO", pInvoice.getInvoiceReference());
@@ -243,9 +243,9 @@ public class InvoiceSapDao extends AbstractSapDao {
 			//Invoice Currency
 			strucHeaderData.setValue("CURRENCY", pInvoice.getInvoiceCurrency());
 			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
-				strucHeaderData.setValue("BLINE_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"DD.MM.YYYY"));
+				strucHeaderData.setValue("BLINE_DATE",dateUtils.stringToDateSap(pInvoice.getScanningDate(),"DD.MM.YYYY"));
 				//Recuperation de la date du document
-				strucHeaderData.setValue("PSTNG_DATE",dateUtils.stringToDateSAP(pInvoice.getScanningDate(),"DD.MM.YYYY") );
+				strucHeaderData.setValue("PSTNG_DATE",dateUtils.stringToDateSap(pInvoice.getScanningDate(),"DD.MM.YYYY") );
 			}
 				
 			
@@ -418,12 +418,12 @@ public class InvoiceSapDao extends AbstractSapDao {
 		strucDocumentHeader.setValue("USERNAME", pInvoice.getSapInvoiceCreator());
 		strucDocumentHeader.setValue("HEADER_TXT", pInvoice.getScanningReference());
 		strucDocumentHeader.setValue("COMP_CODE", COMPANY_CODE );
-		if (pInvoice.getInvoiceDate().compareTo("nulldate")!=0 && pInvoice.getInvoiceDate()!=null )
-			strucDocumentHeader.setValue("DOC_DATE",dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
-		if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
-			strucDocumentHeader.setValue("PSTNG_DATE", dateUtils.stringToDateSAP(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
-			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
-			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")) );
+		if (pInvoice.getInvoiceDate()!=null && pInvoice.getInvoiceDate().compareTo("nulldate")!=0)
+			strucDocumentHeader.setValue("DOC_DATE",dateUtils.stringToDateSap(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
+		if (pInvoice.getScanningDate()!=null && pInvoice.getScanningDate().compareTo("nulldate")!=0){
+			strucDocumentHeader.setValue("PSTNG_DATE", dateUtils.stringToDateSap(pInvoice.getInvoiceDate(),"DD.MM.YYYY"));
+			strucDocumentHeader.setValue("FISC_YEAR", dateUtils.getYear(dateUtils.stringToDateSap(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+			strucDocumentHeader.setValue("FIS_PERIOD", dateUtils.getMonth(dateUtils.stringToDateSap(pInvoice.getScanningDate(), "DD.MM.YYYY")) );
 		}
 		//TODO
 		//Bloc if for invoice or credit note
@@ -857,7 +857,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				function.getImportParameterList().setValue("INVOICEDOCNUMBER", pInvoice.getSapMMDocumentNumber() );
 			}
 			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
-				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSap(pInvoice.getScanningDate(), "DD.MM.YYYY")));
 			}
 		} catch (Exception e) {
 			logger.error("Error during setting BAPI "+ZMM_VIM_SYNCHRO+" Fields : "+ e.getMessage());
@@ -960,7 +960,7 @@ public class InvoiceSapDao extends AbstractSapDao {
 				function.getImportParameterList().setValue("INVOICEDOCNUMBER", pInvoice.getSapMMDocumentNumber() );
 			}
 			if (pInvoice.getScanningDate().compareTo("nulldate")!=0 && pInvoice.getScanningDate()!=null ){
-				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSAP(pInvoice.getScanningDate(), "DD.MM.YYYY")));
+				function.getImportParameterList().setValue("FISCALYEAR",dateUtils.getYear(dateUtils.stringToDateSap(pInvoice.getScanningDate(), "DD.MM.YYYY")));
 			}
 		} catch (Exception e) {
 			logger.error("Error during setting BAPI "+ZFI_VIM_SYNCHRO+" Fields : "+ e.getMessage());
@@ -1042,12 +1042,12 @@ public class InvoiceSapDao extends AbstractSapDao {
 			String jco_passwd = null;
 			String jco_lang = null;
 
-				jco_ahost = parametersProperties.getVal_sap_jco_ahost();
-				jco_sysnr = parametersProperties.getVal_sap_jco_sysnr();
-				jco_client = parametersProperties.getVal_sap_jco_client();
-				jco_user = parametersProperties.getVal_sap_jco_user();
-				jco_passwd = parametersProperties.getVal_sap_jco_passwd();
-				jco_lang = parametersProperties.getVal_sap_jco_lang();
+			jco_ahost = parametersProperties.getVal_sap_jco_ahost();
+			jco_sysnr = parametersProperties.getVal_sap_jco_sysnr();
+			jco_client = parametersProperties.getVal_sap_jco_client();
+			jco_user = parametersProperties.getVal_sap_jco_user();
+			jco_passwd = parametersProperties.getVal_sap_jco_passwd();
+			jco_lang = parametersProperties.getVal_sap_jco_lang();
 
 
 			connectProperties.setProperty(DestinationDataProvider.JCO_ASHOST, jco_ahost);
