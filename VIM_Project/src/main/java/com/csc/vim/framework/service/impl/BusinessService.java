@@ -78,11 +78,6 @@ public class BusinessService {
 				pInvoice.setBlockingCodeT("T");
 			}
 		}
-		//TODO 
-		//delete 3 test lines 
-		pInvoice.setScanningDate("29/12/2013 00:00:00");
-		pInvoice.setInvoiceCurrency("EUR");
-		pInvoice.setInvoiceDate("29/12/2013 00:00:00");
 		createInvoiceIntoSAP(pInvoice);
 		//TODO
 		//Link SAP Document with Documentum object

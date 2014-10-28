@@ -34,6 +34,7 @@ public class Invoice {
 	private List<String> invoiceIban;
 	//By SAP
 	private List<Message> processorDecision;
+	private String processorLogin;
 	
 	private String firstLevelController;
 	private String GlobalLevelController;
@@ -107,6 +108,14 @@ public class Invoice {
 	private String paymentCondition;
 	
 	
+	public String getProcessorLogin() {
+		return processorLogin;
+	}
+
+	public void setProcessorLogin(String processorLogin) {
+		this.processorLogin = processorLogin;
+	}
+
 	public List<String> getMessage() {
 		return message;
 	}
@@ -550,10 +559,10 @@ public class Invoice {
 			List<String> message, String sapBlockingCode,
 			Double invoiceNetAmountEur, int invoiceNetAmountThreshold,
 			Double invoiceUCT, Double invoiceLCT, List<String> invoiceIban,
-			List<Message> processorDecision, String firstLevelController,
-			String globalLevelController, String selectedApprovalGroup,
-			List<Message> approverGroupList, List<SapMessage> sapReturnMessage,
-			String selectedThresholdAmount,
+			List<Message> processorDecision, String processorLogin,
+			String firstLevelController, String globalLevelController,
+			String selectedApprovalGroup, List<Message> approverGroupList,
+			List<SapMessage> sapReturnMessage, String selectedThresholdAmount,
 			List<BankDetails> listOfBankDetails,
 			List<InvoiceLine> invoiceLines, PurchaseOrder purchaseOrder,
 			Supplier supplierDetail, BlockingCodeEnumList blockingCodeList,
@@ -582,6 +591,7 @@ public class Invoice {
 		this.invoiceLCT = invoiceLCT;
 		this.invoiceIban = invoiceIban;
 		this.processorDecision = processorDecision;
+		this.processorLogin = processorLogin;
 		this.firstLevelController = firstLevelController;
 		GlobalLevelController = globalLevelController;
 		this.selectedApprovalGroup = selectedApprovalGroup;
@@ -625,6 +635,8 @@ public class Invoice {
 		this.invoicecountryOrigin = invoicecountryOrigin;
 		this.paymentCondition = paymentCondition;
 	}
+
+	
 
 	
 

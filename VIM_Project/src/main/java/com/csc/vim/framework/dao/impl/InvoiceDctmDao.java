@@ -17,6 +17,7 @@ import com.csc.vim.framework.model.InvoiceLine;
 import com.csc.vim.framework.model.Message;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.model.Supplier;
+import com.csc.vim.framework.model.Threshold;
 import com.csc.vim.framework.util.DCTMHelper;
 import com.csc.vim.framework.util.DateUtils;
 import com.csc.vim.framework.util.SapHelper;
@@ -45,27 +46,29 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	protected final Logger logger = LoggerFactory
 			.getLogger(InvoiceDctmDao.class);
 	
-	private static final String BANKINFORMATIONS_OBJECT = "bankinformations";
-	private static final String BANKINFORMATIONS_RELATION = "invoice_bankinforma";
-	private static final String SUPPLIER_OBJECT = "supplier";
-	private static final String SUPPLIER_RELATION = "invoice_supplier";
-	private static final String PURCHASEORDER_OBJECT = "purchase_order";
-	private static final String PURCHASEORDER_RELATION = "invoice_purchase_or";
-	private static final String INVOICELINE_OBJECT = "invoice_line";
-	private static final String INVOICELINE_RELATION = "invoice_invoice_lin";
-	private static final String INVOICE_OBJECT = "invoice";
-	private static final String MESSAGE_OBJECT = "message";
-	private static final String MESSAGE_RELATION = "invoice_message_dct ";
-	private static final String NAMESPACE = "demat";
-	private static final String NAMESPACE_INVOICE = "vim";
-	private static final String DQL_QUERY_RETRIEVE_INVOICE_PO = "select * from "+NAMESPACE+"_"+PURCHASEORDER_OBJECT+" p,"+NAMESPACE+"_"+PURCHASEORDER_RELATION+" r where r.child_id = p.r_object_id and r.parent_id='";
-	private static final String DQL_QUERY_RETRIEVE_APPROVER = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where  r.child_id = p.r_object_id and p.message_code='AVWA' and r.parent_id='";
-	private static final String DQL_QUERY_RETRIEVE_PROCESSOR = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where   r.child_id = p.r_object_id and p.message_code<>'AVWA' and r.parent_id='";
-	private static final String DQL_QUERY_RETRIEVE_INVOICE_LINE = "select * from "+NAMESPACE+"_"+INVOICELINE_OBJECT+" p,"+NAMESPACE+"_"+INVOICELINE_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
+	private static final String BANKINFORMATIONS_OBJECT 			= "bankinformations";
+	private static final String BANKINFORMATIONS_RELATION 			= "invoice_bankinforma";
+	private static final String SUPPLIER_OBJECT 					= "supplier";
+	private static final String SUPPLIER_RELATION 					= "invoice_supplier";
+	private static final String PURCHASEORDER_OBJECT				= "purchase_order";
+	private static final String PURCHASEORDER_RELATION				= "invoice_purchase_or";
+	private static final String INVOICELINE_OBJECT 					= "invoice_line";
+	private static final String INVOICELINE_RELATION 				= "invoice_invoice_lin";
+	private static final String INVOICE_OBJECT						= "invoice";
+	private static final String MESSAGE_OBJECT 						= "message";
+	private static final String MESSAGE_RELATION 					= "invoice_message_dct ";
+	private static final String NAMESPACE 							= "demat";
+	private static final String NAMESPACE_INVOICE                   = "vim";
+	private static final String THRESHOLD_OBJECT					= "threshold";
+	private static final String THRESHOLD_RELATION					= "invoice_threshold";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_PO       = "select * from "+NAMESPACE+"_"+PURCHASEORDER_OBJECT+" p,"+NAMESPACE+"_"+PURCHASEORDER_RELATION+" r where r.child_id = p.r_object_id and r.parent_id='";
+	private static final String DQL_QUERY_RETRIEVE_APPROVER         = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where  r.child_id = p.r_object_id and p.message_code='AVWA' and r.parent_id='";
+	private static final String DQL_QUERY_RETRIEVE_PROCESSOR        = "select * from "+NAMESPACE+"_"+MESSAGE_OBJECT+" p,"+NAMESPACE+"_"+MESSAGE_RELATION+" r where   r.child_id = p.r_object_id and p.message_code<>'AVWA' and r.parent_id='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_LINE     = "select * from "+NAMESPACE+"_"+INVOICELINE_OBJECT+" p,"+NAMESPACE+"_"+INVOICELINE_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
 	private static final String DQL_QUERY_RETRIEVE_INVOICE_SUPPLIER = "select * from "+NAMESPACE+"_"+SUPPLIER_OBJECT+" p,"+NAMESPACE+"_"+SUPPLIER_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
-	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL = "select * from "+NAMESPACE+"_"+BANKINFORMATIONS_OBJECT+" p,"+NAMESPACE+"_"+BANKINFORMATIONS_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
-	
-	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS = "select * from "+NAMESPACE_INVOICE+"_"+INVOICE_OBJECT+" where invoice_status='";
+	private static final String DQL_QUERY_RETRIEVE_BANK_DETAIL      = "select * from "+NAMESPACE+"_"+BANKINFORMATIONS_OBJECT+" p,"+NAMESPACE+"_"+BANKINFORMATIONS_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
+	private static final String DQL_QUERY_RETRIEVE_THRESHOLD		= "select * from "+NAMESPACE+"_"+THRESHOLD_OBJECT+" p,"+NAMESPACE+"_"+THRESHOLD_RELATION+" r where  r.child_id = p.r_object_id and r.parent_id='";
+	private static final String DQL_QUERY_RETRIEVE_INVOICE_BY_STATUS= "select * from "+NAMESPACE_INVOICE+"_"+INVOICE_OBJECT+" where invoice_status='";
 
 	/*
 	 *  Invoice Properties
@@ -107,8 +110,18 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String SAP_INVOICE_CREATOR     = "sap_invoice_creator";
 	private static final String SALES_ORDER_NUMBER      = "sales_order_number";
 	private static final String SALES_ORDER_POSITION    = "sales_order_position";
-	private static final String GOOD_RECEIPTS           = "good_receipts";
+	private static final String GOOD_RECEIPTS           = "good_receipt";
+	private static final String PROCESSOR_LOGIN         = "processor_login";
 	
+	
+	/*
+	 * Threshold Properties
+	 */
+	
+	private static final String THRESHOLD_KEY			= "threshold_key";
+	private static final String THRESHOLD_DESC			= "threshold_descr";
+	private static final String THRESHOLD_UNIT			= "threshold_unit";
+	private static final String THRESHOLD_AMOUNT		= "threshold_amount";
 	/*
 	 * Invoice Line Properties
 	 */
@@ -161,6 +174,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String ACCOUNT_NAME            = "account_name";
 	private static final String BANK_NAME               = "bank_name";
 	private static final String BANK_IBAN               = "iban";
+	private static final String SELECTED_ACCOUNT        = "selected";
 	
 	/*
 	 * Purchase Order Properties
@@ -180,6 +194,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	private static final String APPROVER_ROLE            = "message_code";
 	private static final String APPROVER_OBJECT_ID       = "r_object_id";
 	
+	private static final String DCTM_DATE_FORMAT         = "dd/MM/yyyy";
 	/**
 	 * See the IInvoiceDao Interface to get informations about every method
 	 * 
@@ -189,6 +204,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	public Invoice read(Invoice pInvoice) throws DfException, IOException,DfIdentityException,DfAuthenticationException,DfServiceException,DfPrincipalException,Exception {
 		IDfSession session = dctmInstance.getSession();
 		pInvoice = populateInvoiceProperties(pInvoice, session);
+		pInvoice = populateThresholdProperties(pInvoice, session);
 		pInvoice = populateInvoiceLines(pInvoice, session);
 		pInvoice = populateSupplierDetail(pInvoice, session);
 		pInvoice = populateBankInformations(pInvoice,  session);
@@ -203,7 +219,9 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			IDfQuery DQLquery = new DfQuery();
 			IDfSession session = dctmInstance.getSession();
 			DQLquery = updateInvoiceProperties( pInvoice, DQLquery);
-			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);		 
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);	
+			DQLquery = updateThresholdProperties( pInvoice, DQLquery);
+			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);
 			DQLquery = updateSupplierDetail(pInvoice, DQLquery, session);
 			DQLquery.execute(dctmInstance.getSession(), IDfQuery.DF_CACHE_QUERY);
 			DQLquery = updatePurchaseOrder(pInvoice, DQLquery, session);
@@ -291,6 +309,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		pInvoice.setSapInvoiceCreator(invoice.getString(SAP_INVOICE_CREATOR));
 		pInvoice.setSalesOrderNumber(invoice.getString(SALES_ORDER_NUMBER));
 		pInvoice.setSalesOrderPosition(invoice.getString(SALES_ORDER_POSITION));
+		pInvoice.setProcessorLogin(invoice.getString(PROCESSOR_LOGIN));
 		if (pInvoice.getInvoiceIban()!= null )
 		{
 			for (int i = 0; i < invoice.getValueCount(INVOICE_IBAN_LIST); i++) {
@@ -311,9 +330,27 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		return pInvoice;
 	}
 	
+	public Invoice populateThresholdProperties(Invoice pInvoice,IDfSession session) throws  DfException{
+		IDfQuery queryGetThreshold = new DfQuery();
+		queryGetThreshold.setDQL(DQL_QUERY_RETRIEVE_THRESHOLD+ pInvoice.getrObjectId() + "'");
+		IDfCollection invoiceThreshold = queryGetThreshold.execute(session,IDfQuery.DF_READ_QUERY);
+		if (null != invoiceThreshold)
+		{
+			pInvoice.setListOfThreshold(new ArrayList<Threshold>());
+			while (invoiceThreshold.next()) 
+			{
+				Threshold thresholdInstance = new Threshold();
+				thresholdInstance.setThresholdKey(invoiceThreshold.getString(THRESHOLD_KEY));
+				thresholdInstance.setThresholdDesc(invoiceThreshold.getString(THRESHOLD_DESC));
+				thresholdInstance.setThresholdUnit(invoiceThreshold.getString(THRESHOLD_UNIT));
+				thresholdInstance.setThresholdAmount(invoiceThreshold.getString(THRESHOLD_AMOUNT));
+				pInvoice.getListOfThreshold().add(thresholdInstance);
+			}
+		}
+		return pInvoice;
+	}
 	public Invoice populateInvoiceLines(Invoice pInvoice,IDfSession session) throws  DfException{
 		// Populate invoiceLines
-		pInvoice.setInvoiceLines(new ArrayList<InvoiceLine>());
 		IDfQuery queryGetInvoiceLine = new DfQuery();
 		queryGetInvoiceLine.setDQL(DQL_QUERY_RETRIEVE_INVOICE_LINE+ pInvoice.getrObjectId() + "'");
 		IDfCollection invoiceLineCol = queryGetInvoiceLine.execute(session,IDfQuery.DF_READ_QUERY);
@@ -398,6 +435,10 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 				bankDetail.setBankName(invoiceBankDetail.getString(BANK_NAME));
 				bankDetail.setAccountIban(invoiceBankDetail.getString(BANK_IBAN));
 				bankDetail.setAccountName(invoiceBankDetail.getString(ACCOUNT_NAME));
+				if (invoiceBankDetail.getString(SELECTED_ACCOUNT) == "0")
+					bankDetail.setSelected(false);
+				else	
+					bankDetail.setSelected(true);
 				pInvoice.getListOfBankDetails().add(bankDetail);
 			}
 		}
@@ -415,7 +456,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			while (invoicePurchaseOrder.next()) {
 				
 				pInvoice.getPurchaseOrder().setPoDocumentType(invoicePurchaseOrder.getString(PURCHASE_ORDER_DOC_TYPE));
-				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDateDCTM(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),"dd/mm/yyyy"));
+				pInvoice.getPurchaseOrder().setPoDate(dateUtils.stringToDateDCTM(invoicePurchaseOrder.getString(PURCHASE_ORDER_DATE),DCTM_DATE_FORMAT));
 				pInvoice.getPurchaseOrder().setPoNumber(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER));
 				pInvoice.getPurchaseOrder().setPoNumberPosition(invoicePurchaseOrder.getString(PURCHASE_ORDER_NUMBER_POS));
 				pInvoice.getPurchaseOrder().setSupplierName(invoicePurchaseOrder.getString(PO_SUPPLIER_NAME));
@@ -481,7 +522,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 			invoiceDqlUpdater.append("SET "+INVOICE_CURRENCY+" ='"+ pInvoice.getInvoiceCurrency() + "' ");
 		if (null != pInvoice.getInvoiceDate() )
 			if (!pInvoice.getInvoiceDate().equalsIgnoreCase("nulldate")  )
-				invoiceDqlUpdater.append("SET "+INVOICE_DATE+" =date('"+ pInvoice.getInvoiceDate().substring(0, 10) + "','dd/mm/yyyy') ");
+				invoiceDqlUpdater.append("SET "+INVOICE_DATE+" =date('"+ pInvoice.getInvoiceDate().substring(0, 10) + "','"+DCTM_DATE_FORMAT+"') ");
 		invoiceDqlUpdater.append("SET "+COMPANY_CODE+" ='"+ pInvoice.getCompanyCode() + "' ");
 		invoiceDqlUpdater.append("SET "+INVOICE_FAMILY+"="+ pInvoice.getInvoiceFamily() + " ");
 		if (null != pInvoice.getInvoiceGrossAmount() )
@@ -524,7 +565,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 		invoiceDqlUpdater.append("SET "+SCANNING_REFERENCE+" ='"+ pInvoice.getScanningReference() + "' ");
 		if (null != pInvoice.getScanningDate())
 			if ( !pInvoice.getScanningDate().equalsIgnoreCase("nulldate") )
-				invoiceDqlUpdater.append("SET "+SCANNING_DATE+" =date('"+pInvoice.getScanningDate().substring(0, 10)  + "','dd/mm/yyyy') ");
+				invoiceDqlUpdater.append("SET "+SCANNING_DATE+" =date('"+pInvoice.getScanningDate().substring(0, 10)  + "','"+DCTM_DATE_FORMAT+"') ");
 		invoiceDqlUpdater.append("SET "+COMPANY_TAX_NUMBER+" ='"+ pInvoice.getCompanyTaxNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+COMPANU_VAT_NUMBER+" ='"+ pInvoice.getCompanyVatNumber() + "' ");
 		invoiceDqlUpdater.append("SET "+SAP_INVOICE_CREATOR+" ='"+ pInvoice.getSapInvoiceCreator() + "' ");
@@ -538,6 +579,9 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 	}
 	
 
+	private IDfQuery createThresholdProperties(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{
+		
+	}
 	@SuppressWarnings("unused")
 	private IDfQuery updateInvoiceLines(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{
 		// Updating invoiceLines
@@ -694,7 +738,7 @@ public class InvoiceDctmDao implements IInvoiceDctmDao {
 				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NAME+" ='"+ invoicePODetail.getString(PO_SUPPLIER_NAME) + "' ");
 				poDetailDqlUpdater.append("SET "+PO_SUPPLIER_NUMBER+" ='"+ invoicePODetail.getString(PO_SUPPLIER_NUMBER) + "' ");
 				if (invoicePODetail.getString(PURCHASE_ORDER_DATE).isEmpty() && invoicePODetail.getString(PURCHASE_ORDER_DATE) != null)
-					poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DATE+" =date('"+ invoicePODetail.getString(PURCHASE_ORDER_DATE).substring(0, 10) + "','dd/mm/yyyy') ");
+					poDetailDqlUpdater.append("SET "+PURCHASE_ORDER_DATE+" =date('"+ invoicePODetail.getString(PURCHASE_ORDER_DATE).substring(0, 10) + "','"+DCTM_DATE_FORMAT+"') ");
 				poDetailDqlUpdater.append(" WHERE r_object_id = '"+ invoicePODetail.getString(R_OBJECT_ID) + "' ");
 				logger.debug("Updating Purchase Order Properties: "+ poDetailDqlUpdater.toString());
 				DQLquery.setDQL(poDetailDqlUpdater.toString());			

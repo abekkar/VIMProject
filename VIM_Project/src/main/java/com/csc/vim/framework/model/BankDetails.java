@@ -12,8 +12,18 @@ public class BankDetails {
 	private String bankName;
 	private String accountIban;
 	private String accountName;
-
+	private boolean selected;
 	
+
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
 	public String getrObjectId() {
 		return rObjectId;
 	}
@@ -46,14 +56,16 @@ public class BankDetails {
 		this.accountName = accountName;
 	}
 
-	
+
+
 	public BankDetails(String rObjectId, String bankName, String accountIban,
-			String accountName) {
+			String accountName, Boolean selected) {
 		super();
 		this.rObjectId = rObjectId;
 		this.bankName = bankName;
 		this.accountIban = accountIban;
 		this.accountName = accountName;
+		this.selected = selected;
 	}
 
 	public BankDetails(){

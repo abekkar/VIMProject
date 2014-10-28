@@ -581,10 +581,10 @@ public class InvoiceSapDao extends AbstractSapDao {
 				function.getImportParameterList().setValue("PO_POSITION", pInvoice.getPurchaseOrder().getPoNumberPosition());
 			}
 			if (null !=pInvoice.getSupplierDetail()){
-				if (null != pInvoice.getSupplierDetail().getSupplierVatNumber()) {
+				if (null != pInvoice.getSupplierDetail().getSupplierVatNumber() && !"".equalsIgnoreCase(pInvoice.getSupplierDetail().getSupplierVatNumber())) {
 					function.getImportParameterList().setValue("VAT_NUMBER", pInvoice.getSupplierDetail().getSupplierVatNumber());
 				}
-				if (null != pInvoice.getSupplierDetail().getSupplierTaxNumber()) {
+				if (null != pInvoice.getSupplierDetail().getSupplierTaxNumber() && !"".equalsIgnoreCase(pInvoice.getSupplierDetail().getSupplierTaxNumber())) {
 					function.getImportParameterList().setValue("STEUER_NUMMER",pInvoice.getSupplierDetail().getSupplierTaxNumber());
 				}
 			}
@@ -652,9 +652,8 @@ public class InvoiceSapDao extends AbstractSapDao {
 		// **************************
 		try
 		{
-			//TODO
-//			if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
-//				invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
+			if (null != function.getExportParameterList().getString(INVOICE_FAMILY))
+				invoiceInstance.setInvoiceFamily(Integer.parseInt(function.getExportParameterList().getString(INVOICE_FAMILY)));
 			if (null != function.getExportParameterList().getString(INVOICE_CATEGORY))
 				invoiceInstance.setInvoiceCategory(Integer.parseInt(function.getExportParameterList().getString(INVOICE_CATEGORY)));
 			invoiceInstance.setCompanyCode(COMPANY_CODE);
@@ -683,28 +682,42 @@ public class InvoiceSapDao extends AbstractSapDao {
 					}
 				}
 			}
-			if (function.getTableParameterList().getTable(PO_ITEMS_STRUCTURE).getString(GOOD_RECEIPT_IND).equalsIgnoreCase("0"))
-				invoiceInstance.setGoodReceiptNumber(false);
-			else
+			if (function.getTableParameterList().getTable(PO_ITEMS_STRUCTURE).getString(GOOD_RECEIPT_IND).equalsIgnoreCase("X"))
 				invoiceInstance.setGoodReceiptNumber(true);
+			else
+				invoiceInstance.setGoodReceiptNumber(false);
 			// *****************************
 			// **** GET Bank Detail LIST   *
 			// *****************************
-			if (null != invoiceInstance.getListOfBankDetails())
+			if (null != invoiceInstance.getListOfBankDetails() && invoiceInstance.getListOfBankDetails().size() > 0)
 			{
-				invoiceInstance.getListOfBankDetails().clear();
-				BankDetails bankInstance = new BankDetails();
-				bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
-				//TODO
-				bankInstance.setAccountName("");
-				bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
-				invoiceInstance.getListOfBankDetails().add(bankInstance);
+				boolean bankFounded = false;
+				
+				for (BankDetails bank : invoiceInstance.getListOfBankDetails()) {
+					if (bank.getAccountIban().equalsIgnoreCase(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN))){
+						bank.setSelected(true);
+						bankFounded = true;
+					}
+					else
+						bank.setSelected(false);
+				}
+				if (bankFounded == false){
+					BankDetails bankInstance = new BankDetails();
+					bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
+					//TODO
+					bankInstance.setAccountName("");
+					bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
+					bankInstance.setSelected(true);
+					invoiceInstance.getListOfBankDetails().add(bankInstance);
+				}		
 			}
 			else
 			{
 				invoiceInstance.setListOfBankDetails(new ArrayList<BankDetails>());
 				BankDetails bankInstance = new BankDetails();
 				bankInstance.setAccountIban(function.getExportParameterList().getStructure(SAP_IBAN_OUTPUT_STRUCTURE).getString(T_IBAN_IBAN));
+				bankInstance.setSelected(true);
+				//TODO
 				bankInstance.setAccountName("");
 				bankInstance.setBankName(function.getExportParameterList().getString(BANK_NAME));
 				invoiceInstance.getListOfBankDetails().add(bankInstance);
@@ -727,22 +740,27 @@ public class InvoiceSapDao extends AbstractSapDao {
 			// *****************************
 			// **** GET PROCESSOR LIST   ***
 			// *****************************
-			if (function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows() > 0){
-				invoiceInstance.getProcessorDecision().clear();
-				invoiceInstance.setProcessorDecision(new ArrayList<Message>());
-				for (int i = 0; i < function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows(); i++) {
-					function.getTableParameterList().getTable(PROCESSOR_TABLE).setRow(i);
-					Message processorMessageInstance = new Message();
-					processorMessageInstance.setLogin(function.getTableParameterList().getTable(PROCESSOR_TABLE).getString(DISPATCHER_KEY));
-					invoiceInstance.getApproverGroupList().add(processorMessageInstance);
-				}
+			for (int i = 0; i < function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows(); i++) {
+				invoiceInstance.setProcessorLogin(function.getTableParameterList().getTable(PROCESSOR_TABLE).getString(DISPATCHER_KEY));
 			}
+//			if (function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows() > 0){
+//				invoiceInstance.getProcessorDecision().clear();
+//				invoiceInstance.setProcessorDecision(new ArrayList<Message>());
+//				for (int i = 0; i < function.getTableParameterList().getTable(PROCESSOR_TABLE).getNumRows(); i++) {
+//					function.getTableParameterList().getTable(PROCESSOR_TABLE).setRow(i);
+//					Message processorMessageInstance = new Message();
+//					processorMessageInstance.setLogin(function.getTableParameterList().getTable(PROCESSOR_TABLE).getString(DISPATCHER_KEY));
+//					invoiceInstance.getApproverGroupList().add(processorMessageInstance);
+//				}
+//			}
 			
 			// *****************************
 			// *** GET SUPPLIER DETAIL   ***
 			// *****************************
-			if (invoiceInstance.getSupplierDetail()==null){
+			if (null == invoiceInstance.getSupplierDetail()){
 				Supplier supplierDetailInstance = new Supplier();
+				//TODO
+				//Supplier Number to define
 				supplierDetailInstance.setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
 				supplierDetailInstance.setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
 				supplierDetailInstance.setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
@@ -750,10 +768,6 @@ public class InvoiceSapDao extends AbstractSapDao {
 				supplierDetailInstance.setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
 				supplierDetailInstance.setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
 				supplierDetailInstance.setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
-				if(null != pInvoice.getSupplierDetail()){
-					supplierDetailInstance.setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
-					supplierDetailInstance.setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
-				}
 				if (null != function.getExportParameterList().getString(SUPPLIER_CPD)){
 					if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
 						supplierDetailInstance.setSupplierCPD(false);
@@ -763,6 +777,8 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.setSupplierDetail(supplierDetailInstance);
 			}
 			else {
+				//TODO
+				//Supplier Number to define
 				invoiceInstance.getSupplierDetail().setSupplierName(function.getExportParameterList().getString(SUPPLIER_NAME));
 				invoiceInstance.getSupplierDetail().setSupplierIndustry(function.getExportParameterList().getString(SUPPLIER_INDUSTRY));
 				invoiceInstance.getSupplierDetail().setSupplierInvoiceAddress(function.getExportParameterList().getString(SUPPLIER_ADRESS));
@@ -770,10 +786,6 @@ public class InvoiceSapDao extends AbstractSapDao {
 				invoiceInstance.getSupplierDetail().setSupplierInvoicePostCode(function.getExportParameterList().getString(SUPPLIER_POST_CODE));
 				invoiceInstance.getSupplierDetail().setSupplierInvoiceCountry(function.getExportParameterList().getString(SUPPLIER_COUNTRY));
 				invoiceInstance.getSupplierDetail().setSupplierInvoiceEmail(function.getExportParameterList().getString(SUPPLIER_EMAIL));
-				if(null != pInvoice.getSupplierDetail()){
-					invoiceInstance.getSupplierDetail().setSupplierTaxNumber(pInvoice.getSupplierDetail().getSupplierTaxNumber());
-					invoiceInstance.getSupplierDetail().setSupplierVatNumber(pInvoice.getSupplierDetail().getSupplierVatNumber());
-				}
 				if (null != function.getExportParameterList().getString(SUPPLIER_CPD))
 					if (function.getExportParameterList().getString(SUPPLIER_CPD).equalsIgnoreCase("0"))
 						invoiceInstance.getSupplierDetail().setSupplierCPD(false);
@@ -788,10 +800,6 @@ public class InvoiceSapDao extends AbstractSapDao {
 				PurchaseOrder purchaseOrderInstance = new PurchaseOrder();
 				purchaseOrderInstance.setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
 				purchaseOrderInstance.setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
-				if (null != pInvoice.getPurchaseOrder()){
-					purchaseOrderInstance.setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
-					purchaseOrderInstance.setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
-				}
 				purchaseOrderInstance.setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
 				purchaseOrderInstance.setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
 				invoiceInstance.setPurchaseOrder(purchaseOrderInstance);
@@ -799,14 +807,11 @@ public class InvoiceSapDao extends AbstractSapDao {
 			else{
 				invoiceInstance.getPurchaseOrder().setPoDocumentType(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_TYPE));
 				invoiceInstance.getPurchaseOrder().setPoNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(PO_NUMBER));
-				if (null != pInvoice.getPurchaseOrder()){
-					invoiceInstance.getPurchaseOrder().setPoNumberPosition(pInvoice.getPurchaseOrder().getPoNumberPosition());
-					invoiceInstance.getPurchaseOrder().setPoNumber(pInvoice.getPurchaseOrder().getPoNumber());
-				}
 				invoiceInstance.getPurchaseOrder().setSupplierName(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NAME));
 				invoiceInstance.getPurchaseOrder().setSupplierNumber(function.getExportParameterList().getStructure(PO_HEADER_STRUCTURE).getString(VENDOR_NUMBER));
 			}
 			logger.debug("Retrieving SAP informations for the invoice reference :  " + invoiceInstance.getInvoiceReference());
+			
 		} catch (Exception e) {
 			logger.error("Error during getting BAPI  "+ZMM_BAPI_RETRIEVE_TO_DCTM+" informations : "+ e.getMessage());
 		}	
