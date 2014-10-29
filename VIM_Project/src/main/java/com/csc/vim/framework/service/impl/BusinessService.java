@@ -256,6 +256,8 @@ public class BusinessService {
 		}
 		for (Invoice invoiceInstance : listOfInvoices) {
 			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
+			if (invoiceInstance.getInvoiceStatus() == Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_EIGHT()))
+				invoiceInstance.setBlockingCodeT("0");
 			try {
 				invoiceDCTMServiceInstance.updateDctmInvoice(invoiceInstance);
 				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
@@ -293,6 +295,8 @@ public class BusinessService {
 		for (Invoice invoiceInstance : listOfInvoices) {
 			invoiceInstance = invoiceSapServiceInstance.retrieveDataFromSAP(invoiceInstance);
 			try {
+				if (invoiceInstance.getInvoiceStatus() == Integer.parseInt(parametersProperties.getINV_DCTM_STATUS_NINE()))
+					invoiceInstance.setBlockingCodeV("0");
 				invoiceDCTMServiceInstance.updateDctmInvoiceProperties(invoiceInstance);
 				logger.debug(ErrorConstants.SUCCESS_DCTM_UPDATE_CODE +": "+ ErrorConstants.SUCCESS_DCTM_UPDATE_MESSAGE);
 			} catch (Exception e) {

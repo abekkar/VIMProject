@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.csc.vim.framework.invoice.service.InvoiceDctmService;
+import com.csc.vim.framework.invoice.service.InvoiceDocumentumService;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.po.dao.PurchaseOrderDAODctm;
 import com.documentum.fc.client.DfAuthenticationException;
@@ -29,7 +29,7 @@ public class PurchaseOrderDctmService {
 	private PurchaseOrderDAODctm poDaoDctm;
 	
 	@Autowired
-	private InvoiceDctmService invoiceService;
+	private InvoiceDocumentumService invoiceService;
 	
 	public PurchaseOrder getById(String pId, Boolean pTransactionnal) throws DfException {
 		PurchaseOrder po = null;

@@ -128,3 +128,13 @@ Error:  >Fri Oct 17 15:18:46,392<    >RfcGetException rc (7) message: Exception 
 Error:  >Fri Oct 17 15:20:25,801<    >RfcGetException rc (7) message: Exception condition "NO_PARAMETER" raised.
 <RfcGetException
 
+
+**** Error file opened at 20141023 165604 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Thu Oct 23 16:56:04,150<    >RfcGetException rc (7) message: Purchase order 73400030 still incomplete
+<RfcGetException
+
+
+**** Error file opened at 20141023 165816 Central European Summer Time Rel 3.0.10 (2013-08-08) [720.440]
+Error:  >Thu Oct 23 16:58:16,728<    >RfcGetException rc (7) message: Purchase order 73400030 still incomplete
+<RfcGetException
+

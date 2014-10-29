@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.csc.vim.framework.bankinformation.model.BankingInformation;
-import com.csc.vim.framework.invoice.dao.InvoiceDodcumentumDao;
+import com.csc.vim.framework.invoice.dao.InvoiceDocumentumDao;
 import com.csc.vim.framework.invoice.model.Invoice;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.properties.DctmModelType;
@@ -21,10 +21,10 @@ import com.documentum.fc.client.DfServiceException;
 import com.documentum.fc.common.DfException;
 
 @Service
-public class InvoiceDctmService {
+public class InvoiceDocumentumService {
 
 	@Autowired
-	private InvoiceDodcumentumDao invoiceDao;
+	private InvoiceDocumentumDao invoiceDao;
 	
 	@Autowired
 	private FileUtils fileUtils;

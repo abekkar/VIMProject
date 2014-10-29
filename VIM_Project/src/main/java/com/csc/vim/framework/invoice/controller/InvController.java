@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.csc.vim.framework.bankinformation.model.BankingInformation;
 import com.csc.vim.framework.invoice.model.Invoice;
 import com.csc.vim.framework.invoice.service.InvoiceDctmFactoryService;
-import com.csc.vim.framework.invoice.service.InvoiceDctmService;
+import com.csc.vim.framework.invoice.service.InvoiceDocumentumService;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.supplier.model.Supplier;
 import com.csc.vim.framework.util.FileUtils;
@@ -26,7 +26,7 @@ import com.csc.vim.framework.util.FileUtils;
 public class InvController {
 
 	@Autowired
-	private InvoiceDctmService invoiceService;
+	private InvoiceDocumentumService invoiceService;
 	
 	@Autowired
 	private InvoiceDctmFactoryService invoiceFactory;

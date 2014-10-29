@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.csc.vim.framework.invoice.service.InvoiceDctmService;
+import com.csc.vim.framework.invoice.service.InvoiceDocumentumService;
 import com.csc.vim.framework.supplier.dao.ISupplierDAO;
 import com.csc.vim.framework.supplier.model.Supplier;
 import com.documentum.fc.common.DfException;
@@ -23,7 +23,7 @@ public class SupplierDctmService {
 	private static final String WORKING_FODLER = "/corp/vim_invoice";
 	
 	@Autowired
-	private InvoiceDctmService invoiceService;
+	private InvoiceDocumentumService invoiceService;
 	
 	@Autowired
 	private ISupplierDAO supplierDAO;

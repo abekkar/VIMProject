@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.csc.vim.framework.bankinformation.model.BankingInformation;
 import com.csc.vim.framework.bankinformation.service.BankingInformationService;
 import com.csc.vim.framework.common.model.JipSession;
-import com.csc.vim.framework.invoice.dao.InvoiceDodcumentumDao;
+import com.csc.vim.framework.invoice.dao.InvoiceDocumentumDao;
 import com.csc.vim.framework.invoice.model.Invoice;
 import com.csc.vim.framework.model.PurchaseOrder;
 import com.csc.vim.framework.po.service.PurchaseOrderDctmService;
@@ -29,10 +29,10 @@ import com.documentum.fc.common.DfException;
 public class InvoiceDctmFactoryService {
 
 	@Autowired
-	private InvoiceDodcumentumDao invoiceDao;
+	private InvoiceDocumentumDao invoiceDao;
 	
 	@Autowired
-	private InvoiceDctmService invoiceService;
+	private InvoiceDocumentumService invoiceService;
 	
 	@Autowired
 	private PurchaseOrderDctmService poService;

@@ -584,7 +584,8 @@ public class InvoiceDctmDao implements IInvoiceDctmDao{
 	
 
 	private IDfQuery createThresholdProperties(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{
-		return null;
+		
+
 	}
 	@SuppressWarnings("unused")
 	private IDfQuery updateInvoiceLines(Invoice pInvoice,IDfQuery DQLquery) throws  DfException{

@@ -26,7 +26,7 @@ import com.documentum.operations.IDfImportOperation;
 import com.documentum.operations.IDfOperationError;
 
 @Repository
-public class InvoiceDodcumentumDao extends DctmDao<Invoice> implements IInvoiceDao {
+public class InvoiceDocumentumDao extends DctmDao<Invoice> implements IInvoiceDao {
 
 	@Autowired
 	private com.csc.vim.framework.dao.impl.InvoiceDctmDao abeInvoiceDao;
@@ -34,7 +34,7 @@ public class InvoiceDodcumentumDao extends DctmDao<Invoice> implements IInvoiceD
 	@Autowired
 	private DateUtils dateUtils;
 	
-	protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvoiceDodcumentumDao.class);
+	protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvoiceDocumentumDao.class);
 	
 	private static final String INVOICE_TYPE            = "invoice_type";
 	private static final String INVOICE_CATEGORY        = "invoice_category";
